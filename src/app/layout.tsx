@@ -1,7 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
-import { SiteFooter } from "@/components/SiteFooter";
-import { SiteHeader } from "@/components/SiteHeader";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { site } from "@/lib/site";
 
@@ -26,9 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en-GB" suppressHydrationWarning>
       <body className="min-h-dvh antialiased">
         <ThemeProvider>
-          <SiteHeader />
-          <main>{children}</main>
-          <SiteFooter />
+          {children}
         </ThemeProvider>
       </body>
     </html>
