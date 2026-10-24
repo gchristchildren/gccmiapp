@@ -3,7 +3,7 @@ import Link from "next/link";
 import { PushToggle } from "@/components/PushToggle";
 import { Card } from "@/components/ui";
 import { requireUser } from "@/lib/auth";
-import { fmtDate, fmtDateTime } from "@/lib/format";
+import { ageLabel, fmtDate, fmtDateTime } from "@/lib/format";
 
 export const metadata = { title: "Parent portal" };
 export const dynamic = "force-dynamic";
@@ -66,7 +66,7 @@ export default async function PortalHome() {
               <li key={s.id} className="rounded-2xl bg-surface-2 p-3 text-sm">
                 <p className="font-semibold">{s.title}</p>
                 <p className="text-muted">{fmtDateTime(s.starts_at)}{s.venue ? ` · ${s.venue}` : ""}</p>
-                <p className="mt-1 text-xs text-brand">Ages {s.age_group === "all" ? "all" : s.age_group}</p>
+                <p className="mt-1 text-xs text-brand">{ageLabel(s.age_group)}</p>
               </li>
             ))}
             {!next.length && <li className="text-sm text-muted">No upcoming sessions for your children&apos;s age groups yet.</li>}

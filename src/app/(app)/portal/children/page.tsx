@@ -47,7 +47,7 @@ export default async function Children({ searchParams }: { searchParams: Promise
           <label className="text-sm font-medium">Age group
             <select name="age_group" required className={input} defaultValue="">
               <option value="" disabled>Choose…</option>
-              {ageGroups.map((g) => <option key={g} value={g}>{g} years</option>)}
+              {ageGroups.map((g) => <option key={g} value={g}>{g}</option>)}
             </select>
           </label>
           <label className="text-sm font-medium sm:col-span-2">Allergies or medical notes (optional)

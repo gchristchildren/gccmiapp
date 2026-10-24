@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui";
 import { requireUser } from "@/lib/auth";
-import { fmtDate, fmtDateTime } from "@/lib/format";
+import { ageLabel, fmtDate, fmtDateTime } from "@/lib/format";
 
 export const metadata = { title: "Schedule & lessons" };
 export const dynamic = "force-dynamic";
@@ -28,7 +28,7 @@ export default async function Schedule() {
           {upcoming.map((s) => (
             <Card key={s.id} className="p-5 text-sm">
               <p className="text-base font-bold">{s.title}</p>
-              <p className="text-muted">{fmtDateTime(s.starts_at)}{s.venue ? ` · ${s.venue}` : ""} · Ages {s.age_group}</p>
+              <p className="text-muted">{fmtDateTime(s.starts_at)}{s.venue ? ` · ${s.venue}` : ""} · {ageLabel(s.age_group)}</p>
             </Card>
           ))}
           {!upcoming.length && <p className="text-sm text-muted">No upcoming sessions yet.</p>}

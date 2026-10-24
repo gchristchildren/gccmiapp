@@ -3,7 +3,7 @@ import { Card } from "@/components/ui";
 import { requireAdmin } from "@/lib/auth";
 import { ConfirmButton } from "@/components/ConfirmButton";
 import { deleteSession, saveAttendance, updateSession, updateSessionContent } from "@/lib/actions/admin";
-import { ageGroups, fmtDateTime, isoToUkLocal } from "@/lib/format";
+import { ageGroups, ageLabel, fmtDateTime, isoToUkLocal } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
@@ -26,7 +26,7 @@ export default async function SessionDetail({ params, searchParams }: { params: 
     <div className="mx-auto max-w-3xl space-y-6">
       <div>
         <h1 className="text-2xl font-bold">{s.title}</h1>
-        <p className="text-sm text-muted">{fmtDateTime(s.starts_at)} · ages {s.age_group}</p>
+        <p className="text-sm text-muted">{fmtDateTime(s.starts_at)} · {ageLabel(s.age_group)}</p>
       </div>
       {saved && <p role="status" className="rounded-2xl bg-brand-soft px-4 py-3 text-sm text-brand">Attendance saved.</p>}
       {updated && <p role="status" className="rounded-2xl bg-brand-soft px-4 py-3 text-sm text-brand">Session updated.</p>}

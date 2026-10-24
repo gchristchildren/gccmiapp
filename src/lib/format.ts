@@ -11,7 +11,10 @@ export const fmtDateTime = (iso: string) =>
 export const fmtMoney = (pence: number) =>
   new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP", maximumFractionDigits: 0 }).format(pence / 100);
 
-export const ageGroups = ["3-5", "6-8", "9-12", "13-17"] as const;
+// The groups GCCMI uses for Bible Club classes (see gccmi.co.uk).
+export const ageGroups = ["Kids", "Pre-Teens", "Teens"] as const;
+
+export const ageLabel = (group: string) => (group === "all" ? "All ages" : group);
 
 /** Turns a datetime-local value typed in UK time into an ISO timestamp. */
 export function ukLocalToIso(value: string) {

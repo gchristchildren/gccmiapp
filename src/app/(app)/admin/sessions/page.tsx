@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Card } from "@/components/ui";
 import { requireAdmin } from "@/lib/auth";
 import { createSession } from "@/lib/actions/admin";
-import { ageGroups, fmtDateTime } from "@/lib/format";
+import { ageGroups, ageLabel, fmtDateTime } from "@/lib/format";
 
 export const metadata = { title: "Bible Club sessions" };
 export const dynamic = "force-dynamic";
@@ -38,7 +38,7 @@ export default async function Sessions({ searchParams }: { searchParams: Promise
         {(data ?? []).map((s) => (
           <Link key={s.id} href={`/admin/sessions/${s.id}`} className="block rounded-3xl border border-line bg-surface p-5 text-sm shadow-card transition hover:-translate-y-0.5">
             <p className="text-base font-bold">{s.title}</p>
-            <p className="text-muted">{fmtDateTime(s.starts_at)} · ages {s.age_group}{s.venue ? ` · ${s.venue}` : ""}</p>
+            <p className="text-muted">{fmtDateTime(s.starts_at)} · {ageLabel(s.age_group)}{s.venue ? ` · ${s.venue}` : ""}</p>
             <p className="mt-1 text-xs font-medium text-brand">Open to mark attendance and add lesson notes →</p>
           </Link>
         ))}

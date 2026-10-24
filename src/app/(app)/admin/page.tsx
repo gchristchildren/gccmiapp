@@ -109,7 +109,7 @@ export default async function AdminDashboard() {
               {s.atRisk.slice(0, 6).map((c) => (
                 <li key={c.id} className="flex justify-between py-2">
                   <span>{c.first_name} {c.last_name}</span>
-                  <span className="text-muted">Ages {c.age_group}</span>
+                  <span className="text-muted">{c.age_group}</span>
                 </li>
               ))}
               {!s.atRisk.length && <li className="py-2 text-muted">No one flagged.</li>}
