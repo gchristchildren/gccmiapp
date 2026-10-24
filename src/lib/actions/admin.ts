@@ -155,6 +155,7 @@ export async function sendManualNotification(f: FormData) {
 
 // ---------------------------------------------------------------- edit and delete
 const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const NOT_DONE = "That change didn't go through: you may not have permission yet, or the record no longer exists.";
 
 export async function updateSession(f: FormData) {
   const { supabase } = await requireAdmin();
@@ -163,7 +164,7 @@ export async function updateSession(f: FormData) {
   const group = text(f, "age_group");
   if (!text(f, "title") || !text(f, "starts_at")) fail(page, "Title and start time are required.");
   if (group !== "all" && !(ageGroups as readonly string[]).includes(group)) fail(page, "Choose an age group.");
-  const { error } = await supabase.from("sessions").update({
+  const { data, error } = await supabase.from("sessions").update({
     title: text(f, "title"),
     age_group: group,
     starts_at: ukLocalToIso(text(f, "starts_at")),
@@ -171,8 +172,8 @@ export async function updateSession(f: FormData) {
     memory_verse: text(f, "memory_verse") || null,
     lesson_summary: text(f, "lesson_summary") || null,
     published: f.get("published") === "on",
-  }).eq("id", id);
-  if (error) fail(page, "Could not save the changes.");
+  }).eq("id", id).select("id");
+  if (error || !data?.length) fail(page, NOT_DONE);
   revalidatePath("/admin", "layout");
   revalidatePath("/portal", "layout");
   redirect(`${page}?updated=1`);
@@ -180,7 +181,8 @@ export async function updateSession(f: FormData) {
 
 export async function deleteSession(f: FormData) {
   const { supabase } = await requireAdmin();
-  await supabase.from("sessions").delete().eq("id", text(f, "id"));
+  const { data, error } = await supabase.from("sessions").delete().eq("id", text(f, "id")).select("id");
+  if (error || !data?.length) fail(`/admin/sessions/${text(f, "id")}`, NOT_DONE);
   revalidatePath("/admin", "layout");
   revalidatePath("/portal", "layout");
   redirect("/admin/sessions");
@@ -191,33 +193,34 @@ export async function updateVolunteer(f: FormData) {
   const email = text(f, "email");
   if (!text(f, "full_name") || !emailRe.test(email)) fail("/admin/volunteers", "A name and a valid email are required.");
   const status = text(f, "status");
-  const { error } = await supabase.from("volunteers").update({
+  const { data, error } = await supabase.from("volunteers").update({
     full_name: text(f, "full_name"),
     email,
     phone: text(f, "phone") || null,
     message: text(f, "message") || null,
     skills: f.getAll("skills").map(String).filter((s) => volunteerSkills.includes(s)),
     status: ["new", "contacted", "active", "inactive"].includes(status) ? status : "new",
-  }).eq("id", text(f, "id"));
-  if (error) fail("/admin/volunteers", "Could not save the changes.");
+  }).eq("id", text(f, "id")).select("id");
+  if (error || !data?.length) fail("/admin/volunteers", NOT_DONE);
   revalidatePath("/admin", "layout");
   redirect("/admin/volunteers?updated=1");
 }
 
 export async function deleteVolunteer(f: FormData) {
   const { supabase } = await requireAdmin();
-  await supabase.from("volunteers").delete().eq("id", text(f, "id"));
+  const { data, error } = await supabase.from("volunteers").delete().eq("id", text(f, "id")).select("id");
+  if (error || !data?.length) fail("/admin/volunteers", NOT_DONE);
   revalidatePath("/admin", "layout");
   redirect("/admin/volunteers?deleted=1");
 }
 
 export async function updateParent(f: FormData) {
   const { supabase } = await requireAdmin();
-  const { error } = await supabase.from("profiles").update({
+  const { data, error } = await supabase.from("profiles").update({
     full_name: text(f, "full_name"),
     phone: text(f, "phone") || null,
-  }).eq("id", text(f, "id"));
-  if (error) fail("/admin/families", "Could not save the changes.");
+  }).eq("id", text(f, "id")).select("id");
+  if (error || !data?.length) fail("/admin/families", NOT_DONE);
   revalidatePath("/admin", "layout");
   redirect("/admin/families?updated=1");
 }
@@ -228,22 +231,23 @@ export async function updateChild(f: FormData) {
   if (!text(f, "first_name") || !text(f, "last_name")) fail("/admin/families", "Both names are required.");
   if (!/^\d{4}-\d{2}-\d{2}$/.test(dob)) fail("/admin/families", "Enter a valid date of birth.");
   if (!(ageGroups as readonly string[]).includes(text(f, "age_group"))) fail("/admin/families", "Choose an age group.");
-  const { error } = await supabase.from("children").update({
+  const { data, error } = await supabase.from("children").update({
     first_name: text(f, "first_name"),
     last_name: text(f, "last_name"),
     date_of_birth: dob,
     age_group: text(f, "age_group"),
     medical_notes: text(f, "medical_notes") || null,
     photo_consent: f.get("photo_consent") === "on",
-  }).eq("id", text(f, "id"));
-  if (error) fail("/admin/families", "Could not save the changes.");
+  }).eq("id", text(f, "id")).select("id");
+  if (error || !data?.length) fail("/admin/families", NOT_DONE);
   revalidatePath("/admin", "layout");
   redirect("/admin/families?updated=1");
 }
 
 export async function deleteChildAdmin(f: FormData) {
   const { supabase } = await requireAdmin();
-  await supabase.from("children").delete().eq("id", text(f, "id"));
+  const { data, error } = await supabase.from("children").delete().eq("id", text(f, "id")).select("id");
+  if (error || !data?.length) fail("/admin/families", NOT_DONE);
   revalidatePath("/admin", "layout");
   redirect("/admin/families?deleted=1");
 }
@@ -252,7 +256,10 @@ export async function deleteChildAdmin(f: FormData) {
 export async function deleteFamily(f: FormData) {
   const { supabase } = await requireAdmin();
   const { error } = await supabase.rpc("admin_delete_family", { target: text(f, "id") });
-  if (error) fail("/admin/families", error.message.replace(/^.*?: /, "") || "Could not delete the family.");
+  if (error) {
+    const missing = /could not find the function|schema cache/i.test(error.message);
+    fail("/admin/families", missing ? NOT_DONE : error.message || "Could not delete the family.");
+  }
   revalidatePath("/admin", "layout");
   redirect("/admin/families?deleted=1");
 }
