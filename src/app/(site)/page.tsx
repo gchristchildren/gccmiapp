@@ -259,7 +259,7 @@ export default async function Home() {
                   <div className="p-5">
                     <p className="text-xs text-muted">{new Date(post.published_at).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "Europe/London" })}</p>
                     <h3 className="mt-1 font-bold">{post.title}</h3>
-                    <p className="mt-2 line-clamp-3 text-sm text-muted">{post.excerpt}</p>
+                    <p className="mt-2 line-clamp-3 text-sm text-muted [overflow-wrap:anywhere]">{post.excerpt}</p>
                   </div>
                 </Link>
               ))}

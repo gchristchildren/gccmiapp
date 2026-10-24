@@ -24,7 +24,7 @@ export default async function Blog() {
                 <div className="flex flex-1 flex-col p-5">
                   <p className="text-xs text-muted">{new Date(p.published_at).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "Europe/London" })}</p>
                   <h2 className="mt-1 text-lg font-bold">{p.title}</h2>
-                  <p className="mt-2 line-clamp-3 flex-1 text-sm text-muted">{p.excerpt}</p>
+                  <p className="mt-2 line-clamp-3 flex-1 text-sm text-muted [overflow-wrap:anywhere]">{p.excerpt}</p>
                   <span className="mt-4 text-sm font-semibold text-brand">Read more →</span>
                 </div>
               </Link>
