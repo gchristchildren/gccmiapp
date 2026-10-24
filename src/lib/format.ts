@@ -21,3 +21,12 @@ export function ukLocalToIso(value: string) {
   const offset = londonAsUtc.getTime() - asUtc.getTime();
   return new Date(asUtc.getTime() - offset).toISOString();
 }
+
+/** Turns an ISO timestamp into the value a datetime-local input expects, in UK time. */
+export function isoToUkLocal(iso: string) {
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hourCycle: "h23",
+  }).formatToParts(new Date(iso));
+  const g = (t: string) => parts.find((x) => x.type === t)?.value ?? "";
+  return `${g("year")}-${g("month")}-${g("day")}T${g("hour")}:${g("minute")}`;
+}

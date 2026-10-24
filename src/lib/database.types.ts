@@ -305,7 +305,7 @@ export type Database = {
       >;
     };
     Views: { [_ in never]: never };
-    Functions: { [_ in never]: never };
+    Functions: { admin_delete_family: { Args: { target: string }; Returns: undefined } };
     Enums: { app_role: AppRole };
     CompositeTypes: { [_ in never]: never };
   };

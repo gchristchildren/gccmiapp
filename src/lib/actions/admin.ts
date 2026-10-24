@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
+import { volunteerSkills } from "@/lib/content";
 import { ageGroups, ukLocalToIso } from "@/lib/format";
 import { notify, type Audience } from "@/lib/push";
 
@@ -150,4 +151,108 @@ export async function sendManualNotification(f: FormData) {
   revalidatePath("/admin/notifications");
   if (r.skipped) fail("/admin/notifications", "Push isn't configured yet (missing VAPID keys).");
   redirect(`/admin/notifications?sent=${r.sent}`);
+}
+
+// ---------------------------------------------------------------- edit and delete
+const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+export async function updateSession(f: FormData) {
+  const { supabase } = await requireAdmin();
+  const id = text(f, "id");
+  const page = `/admin/sessions/${id}`;
+  const group = text(f, "age_group");
+  if (!text(f, "title") || !text(f, "starts_at")) fail(page, "Title and start time are required.");
+  if (group !== "all" && !(ageGroups as readonly string[]).includes(group)) fail(page, "Choose an age group.");
+  const { error } = await supabase.from("sessions").update({
+    title: text(f, "title"),
+    age_group: group,
+    starts_at: ukLocalToIso(text(f, "starts_at")),
+    venue: text(f, "venue"),
+    memory_verse: text(f, "memory_verse") || null,
+    lesson_summary: text(f, "lesson_summary") || null,
+    published: f.get("published") === "on",
+  }).eq("id", id);
+  if (error) fail(page, "Could not save the changes.");
+  revalidatePath("/admin", "layout");
+  revalidatePath("/portal", "layout");
+  redirect(`${page}?updated=1`);
+}
+
+export async function deleteSession(f: FormData) {
+  const { supabase } = await requireAdmin();
+  await supabase.from("sessions").delete().eq("id", text(f, "id"));
+  revalidatePath("/admin", "layout");
+  revalidatePath("/portal", "layout");
+  redirect("/admin/sessions");
+}
+
+export async function updateVolunteer(f: FormData) {
+  const { supabase } = await requireAdmin();
+  const email = text(f, "email");
+  if (!text(f, "full_name") || !emailRe.test(email)) fail("/admin/volunteers", "A name and a valid email are required.");
+  const status = text(f, "status");
+  const { error } = await supabase.from("volunteers").update({
+    full_name: text(f, "full_name"),
+    email,
+    phone: text(f, "phone") || null,
+    message: text(f, "message") || null,
+    skills: f.getAll("skills").map(String).filter((s) => volunteerSkills.includes(s)),
+    status: ["new", "contacted", "active", "inactive"].includes(status) ? status : "new",
+  }).eq("id", text(f, "id"));
+  if (error) fail("/admin/volunteers", "Could not save the changes.");
+  revalidatePath("/admin", "layout");
+  redirect("/admin/volunteers?updated=1");
+}
+
+export async function deleteVolunteer(f: FormData) {
+  const { supabase } = await requireAdmin();
+  await supabase.from("volunteers").delete().eq("id", text(f, "id"));
+  revalidatePath("/admin", "layout");
+  redirect("/admin/volunteers?deleted=1");
+}
+
+export async function updateParent(f: FormData) {
+  const { supabase } = await requireAdmin();
+  const { error } = await supabase.from("profiles").update({
+    full_name: text(f, "full_name"),
+    phone: text(f, "phone") || null,
+  }).eq("id", text(f, "id"));
+  if (error) fail("/admin/families", "Could not save the changes.");
+  revalidatePath("/admin", "layout");
+  redirect("/admin/families?updated=1");
+}
+
+export async function updateChild(f: FormData) {
+  const { supabase } = await requireAdmin();
+  const dob = text(f, "date_of_birth");
+  if (!text(f, "first_name") || !text(f, "last_name")) fail("/admin/families", "Both names are required.");
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dob)) fail("/admin/families", "Enter a valid date of birth.");
+  if (!(ageGroups as readonly string[]).includes(text(f, "age_group"))) fail("/admin/families", "Choose an age group.");
+  const { error } = await supabase.from("children").update({
+    first_name: text(f, "first_name"),
+    last_name: text(f, "last_name"),
+    date_of_birth: dob,
+    age_group: text(f, "age_group"),
+    medical_notes: text(f, "medical_notes") || null,
+    photo_consent: f.get("photo_consent") === "on",
+  }).eq("id", text(f, "id"));
+  if (error) fail("/admin/families", "Could not save the changes.");
+  revalidatePath("/admin", "layout");
+  redirect("/admin/families?updated=1");
+}
+
+export async function deleteChildAdmin(f: FormData) {
+  const { supabase } = await requireAdmin();
+  await supabase.from("children").delete().eq("id", text(f, "id"));
+  revalidatePath("/admin", "layout");
+  redirect("/admin/families?deleted=1");
+}
+
+/** Removes a parent's account and everything attached to it (children, registrations, consents). */
+export async function deleteFamily(f: FormData) {
+  const { supabase } = await requireAdmin();
+  const { error } = await supabase.rpc("admin_delete_family", { target: text(f, "id") });
+  if (error) fail("/admin/families", error.message.replace(/^.*?: /, "") || "Could not delete the family.");
+  revalidatePath("/admin", "layout");
+  redirect("/admin/families?deleted=1");
 }
