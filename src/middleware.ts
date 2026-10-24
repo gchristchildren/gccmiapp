@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-/** Refreshes the Supabase session cookie and keeps signed-out users out of /portal and /admin. */
+/** Keeps signed-out users out of /portal and /admin, and refreshes an expired session cookie. */
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request });
 
@@ -20,11 +20,13 @@ export async function middleware(request: NextRequest) {
     },
   );
 
-  const { data } = await supabase.auth.getUser();
+  // Reads the session from the cookie (refreshing it only when it has expired): no network call per click.
+  // The pages themselves re-check the user and row-level security guards the data.
+  const { data } = await supabase.auth.getSession();
   const { pathname } = request.nextUrl;
   const protectedPath = pathname.startsWith("/portal") || pathname.startsWith("/admin");
 
-  if (protectedPath && !data.user) {
+  if (protectedPath && !data.session) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.search = `?next=${encodeURIComponent(pathname)}`;
@@ -33,6 +35,7 @@ export async function middleware(request: NextRequest) {
   return response;
 }
 
+// Only the signed-in areas need it, so public pages are served straight from the CDN.
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.png|sw.js|manifest.webmanifest|brand/|.*\\.(?:png|jpg|svg|webp)$).*)"],
+  matcher: ["/portal/:path*", "/admin/:path*"],
 };

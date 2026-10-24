@@ -39,7 +39,7 @@ export function SiteFooter() {
               <a href={site.social.instagram} target="_blank" rel="noopener noreferrer" className="hover:text-fg">Instagram</a>
               <a href={site.social.youtube} target="_blank" rel="noopener noreferrer" className="hover:text-fg">YouTube</a>
             </li>
-            <li>{site.charityNumber ? `Registered charity no. ${site.charityNumber}` : "Registered charity number: to be added"}</li>
+            {site.charityNumber && <li>Registered charity no. {site.charityNumber}</li>}
           </ul>
         </div>
       </Container>
