@@ -1,14 +1,21 @@
+import { JsonLd } from "@/components/JsonLd";
+import { breadcrumbSchema, abs, pageMeta } from "@/lib/seo";
 import { Mail, MapPin, Phone } from "lucide-react";
 import { ButtonLink, Card, Container, PageHero } from "@/components/ui";
 import { site } from "@/lib/site";
 
-export const metadata = { title: "Contact us" };
+export const metadata = pageMeta({
+  title: "Contact Us in Edinburgh",
+  description: "Contact GCC Ministry International in Edinburgh by phone, email or post. We are happy to help with Bible Club, Academy and Masterclass questions.",
+  path: "/contact",
+});
 
 export default function Contact() {
   const { address, phone, phoneHref, email } = site.contact;
   const map = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address.join(", "))}`;
   return (
     <>
+      <JsonLd data={[breadcrumbSchema([{ name: "Contact", path: "/contact" }]), { "@context": "https://schema.org", "@type": "ContactPage", name: "Contact GCC Ministry International", url: abs("/contact"), about: { "@id": abs("/#organization") } }]} />
       <PageHero title="Let's talk" body="Questions about Bible Club, the Academy, Masterclass or supporting GCCMI? Get in touch." />
       <Container className="grid gap-6 py-16 md:grid-cols-3">
         <Card>

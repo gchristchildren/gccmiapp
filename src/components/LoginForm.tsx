@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
@@ -79,6 +80,11 @@ export function LoginForm() {
           className={input}
         />
       </label>
+      {mode === "signin" && (
+        <div className="-mt-2 text-right">
+          <Link href="/forgot-password" className="text-sm font-medium text-brand">Forgot your password?</Link>
+        </div>
+      )}
       {msg && (
         <p
           role="status"

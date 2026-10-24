@@ -1,10 +1,16 @@
+import { JsonLd } from "@/components/JsonLd";
+import { breadcrumbSchema, pageMeta } from "@/lib/seo";
 import Link from "next/link";
 import { VolunteerForm } from "@/components/VolunteerForm";
 import { Card, Container, PageHero, SectionHeading } from "@/components/ui";
 import { fmtDate } from "@/lib/format";
 import { createPublicClient } from "@/lib/supabase/public";
 
-export const metadata = { title: "Volunteer" };
+export const metadata = pageMeta({
+  title: "Volunteer With a Children’s Charity",
+  description: "Give your time and skills to GCC Ministry International. Join our team in teaching, childcare, media, admin, fundraising and more.",
+  path: "/volunteer",
+});
 export const revalidate = 300;
 
 export default async function Volunteer() {
@@ -12,6 +18,7 @@ export default async function Volunteer() {
 
   return (
     <>
+      <JsonLd data={breadcrumbSchema([{ name: "Volunteer", path: "/volunteer" }])} />
       <PageHero
         title="Volunteer with GCCMI"
         body="Share your skills, hear about opportunities and sign up to help at events."

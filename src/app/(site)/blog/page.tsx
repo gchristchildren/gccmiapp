@@ -1,9 +1,15 @@
+import { JsonLd } from "@/components/JsonLd";
+import { breadcrumbSchema, pageMeta } from "@/lib/seo";
 import Link from "next/link";
 import { ButtonLink, Container, PageHero } from "@/components/ui";
 import { fetchPosts } from "@/lib/posts";
 import { site } from "@/lib/site";
 
-export const metadata = { title: "News & blog" };
+export const metadata = pageMeta({
+  title: "Blog: Parenting, Faith and Family",
+  description: "News and articles from GCC Ministry International on intentional parenting, raising Christian children and family life.",
+  path: "/blog",
+});
 // Rendered fresh on each visit so admin edits (posts, events) show immediately.
 export const dynamic = "force-dynamic";
 
@@ -11,6 +17,7 @@ export default async function Blog() {
   const posts = await fetchPosts();
   return (
     <>
+      <JsonLd data={breadcrumbSchema([{ name: "Blog", path: "/blog" }])} />
       <PageHero title="News & blog" body="Updates, reflections and encouragement from GCCMI." />
       <Container className="py-12">
         {posts.length ? (
@@ -19,7 +26,7 @@ export default async function Blog() {
               <Link key={p.id} href={`/blog/${p.slug}`} className="group flex flex-col overflow-hidden rounded-3xl border border-line bg-surface shadow-card transition hover:-translate-y-1">
                 {p.cover_url && (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={p.cover_url} alt="" className="aspect-video w-full object-cover" loading="lazy" />
+                  <img src={p.cover_url} alt={p.title} className="aspect-video w-full object-cover" loading="lazy" />
                 )}
                 <div className="flex flex-1 flex-col p-5">
                   <p className="text-xs text-muted">{new Date(p.published_at).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "Europe/London" })}</p>

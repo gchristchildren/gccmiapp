@@ -1,12 +1,19 @@
+import { JsonLd } from "@/components/JsonLd";
+import { breadcrumbSchema, pageMeta } from "@/lib/seo";
 import { ShoppingBag, BookOpen } from "lucide-react";
 import { ButtonLink, Card, Container, PageHero } from "@/components/ui";
 import { site } from "@/lib/site";
 
-export const metadata = { title: "Books & store" };
+export const metadata = pageMeta({
+  title: "Christian Parenting Books and Store",
+  description: "Books and resources from GCC Ministry International to support Christian parenting, children’s faith and family life, available to buy online.",
+  path: "/books",
+});
 
 export default function Books() {
   return (
     <>
+      <JsonLd data={breadcrumbSchema([{ name: "Books and store", path: "/books" }])} />
       <PageHero
         title="Books & store"
         body="Bible lessons for your children. Our books are on Amazon, and more is available in our store."

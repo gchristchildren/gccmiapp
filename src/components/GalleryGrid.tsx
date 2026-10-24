@@ -45,7 +45,7 @@ export function GalleryGrid({ photos }: { photos: Photo[] }) {
           >
             <Image
               src={p.src}
-              alt="GCCMI event photo"
+              alt="GCCMI Bible Club and community event photo"
               width={p.w}
               height={p.h}
               sizes="(min-width:1024px) 25vw, (min-width:640px) 33vw, 50vw"
@@ -69,7 +69,7 @@ export function GalleryGrid({ photos }: { photos: Photo[] }) {
           </button>
           <Image
             src={current.src}
-            alt="GCCMI event photo"
+            alt="GCCMI Bible Club and community event photo"
             width={current.w}
             height={current.h}
             sizes="100vw"

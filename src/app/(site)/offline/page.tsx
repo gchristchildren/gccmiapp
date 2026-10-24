@@ -1,6 +1,7 @@
+import { noIndex } from "@/lib/seo";
 import { Container } from "@/components/ui";
 
-export const metadata = { title: "Offline" };
+export const metadata = { title: "Offline", ...noIndex };
 
 export default function Offline() {
   return (

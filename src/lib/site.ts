@@ -5,7 +5,14 @@ export const site = {
   tagline: "Raising children, strengthening families, serving communities.",
   description:
     "GCC Ministry International: free online Bible Club, Academy, Masterclass and charity outreach for children, families and communities.",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
+  // Set NEXT_PUBLIC_SITE_URL once a custom domain is live; until then Vercel's production host is used.
+  url:
+    process.env.NEXT_PUBLIC_SITE_URL ??
+    (process.env.VERCEL_PROJECT_PRODUCTION_URL
+      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+      : process.env.NODE_ENV === "production"
+        ? "https://gccmiapp.vercel.app"
+        : "http://localhost:3000"),
   mainSite: "https://gccmi.co.uk",
   // TODO(owner): add the registered charity number and safeguarding policy link.
   charityNumber: null as string | null,

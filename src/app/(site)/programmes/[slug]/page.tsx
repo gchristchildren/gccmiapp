@@ -1,7 +1,9 @@
 import { Check } from "lucide-react";
+import { JsonLd } from "@/components/JsonLd";
 import { notFound } from "next/navigation";
 import { ButtonLink, Card, Container, PageHero } from "@/components/ui";
 import { programmes } from "@/lib/content";
+import { breadcrumbSchema, courseSchema, faqSchema, pageMeta } from "@/lib/seo";
 import { createPublicClient } from "@/lib/supabase/public";
 
 export const revalidate = 300;
@@ -13,7 +15,8 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const p = programmes.find((x) => x.slug === slug);
-  return { title: p?.name ?? "Programme" };
+  if (!p) return { title: "Programme" };
+  return pageMeta({ title: p.metaTitle, description: p.metaDescription, path: `/programmes/${p.slug}` });
 }
 
 export default async function Programme({ params }: { params: Promise<{ slug: string }> }) {
@@ -28,6 +31,13 @@ export default async function Programme({ params }: { params: Promise<{ slug: st
 
   return (
     <>
+      <JsonLd
+        data={[
+          breadcrumbSchema([{ name: "Programmes", path: "/programmes/bible-club" }, { name: p.name, path: `/programmes/${p.slug}` }]),
+          courseSchema(p),
+          faqSchema(p.faqs),
+        ]}
+      />
       <PageHero title={`GCCMI ${p.name}`} body={p.short}>
         <div className="mt-6 flex flex-wrap gap-2">
           {programmes.map((x) => (
@@ -84,6 +94,20 @@ export default async function Programme({ params }: { params: Promise<{ slug: st
             ))}
           </div>
         )}
+        <div className="md:col-span-2">
+          <h2 className="text-xl font-bold">Frequently asked questions</h2>
+          <div className="mt-4 divide-y divide-line rounded-3xl border border-line bg-surface px-6 shadow-card">
+            {p.faqs.map((f) => (
+              <details key={f.q} className="group py-5">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold">
+                  {f.q}
+                  <span className="text-brand transition group-open:rotate-45">+</span>
+                </summary>
+                <p className="mt-3 text-sm text-muted">{f.a}</p>
+              </details>
+            ))}
+          </div>
+        </div>
         {!!courses?.length && (
           <div className="space-y-4 md:col-span-2">
             <h2 className="text-xl font-bold">Courses</h2>

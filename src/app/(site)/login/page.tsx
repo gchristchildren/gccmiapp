@@ -1,8 +1,9 @@
+import { noIndex } from "@/lib/seo";
 import { Suspense } from "react";
 import { Container } from "@/components/ui";
 import { LoginForm } from "@/components/LoginForm";
 
-export const metadata = { title: "Sign in" };
+export const metadata = { title: "Sign in", ...noIndex };
 
 export default function Login() {
   return (

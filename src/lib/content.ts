@@ -68,6 +68,14 @@ export const impactAreas = [
 export const programmes = [
   {
     slug: "bible-club",
+    metaTitle: "Free Online Bible Club for Children",
+    metaDescription: "Join GCCMI’s free online Bible Club for Christian children worldwide. Live Zoom classes every Friday and Saturday for Kids, Pre-Teens and Teens.",
+    faqs: [
+      { q: "Is the Bible Club really free?", a: "Yes. GCCMI’s online Bible Club is free for all Christian children worldwide and has been running since 2016." },
+      { q: "When are the Bible Club classes?", a: "Classes run live on Zoom every Friday at 7pm and Saturday at 12pm for any age group, with Saturday 7pm for Kids and Pre-Teens and 8pm for Teens (UK time)." },
+      { q: "What age groups does Bible Club cover?", a: "Children join one of three age groups: Kids, Pre-Teens or Teens. Parents choose the right group when registering their child." },
+      { q: "What does my child need to join?", a: "A laptop, desktop, iPad or phone with internet, a Bible, a pen and a jotter." },
+    ],
     name: "Bible Club",
     short: "Our free online Bible Club teaches Christian children the Word of God, every week, from the comfort of their homes.",
     registration: "Create a parent account, register your child and choose their age group. Bible Club is free for all Christian children worldwide.",
@@ -116,6 +124,14 @@ export const programmes = [
   },
   {
     slug: "academy",
+    metaTitle: "Online Academy for Children: Maths, Coding and More",
+    metaDescription: "GCC Academy is a flexible online programme where children learn Maths, English, Coding, Web Design, Music and more in groups on Zoom.",
+    faqs: [
+      { q: "What subjects does GCC Academy teach?", a: "Mathematics, English, Coding, Web Design, Music, French, Cooking, Microsoft Package and Diction." },
+      { q: "How are Academy classes delivered?", a: "All classes are held live on Zoom. Students sign in to the Learning Hub to view previous classes, access resources and submit weekly assignments." },
+      { q: "Do children need to be in Bible Club to join the Academy?", a: "No, but the Academy is especially helpful for children in our Bible Club and is designed to complement it." },
+      { q: "How do I register for the Academy?", a: "Register for each cohort and the team will be in touch with the details." },
+    ],
     name: "Academy",
     short: "GCC Academy is a flexible, supplementary online training where children learn in groups, from the comfort of their homes.",
     registration: "Register for each cohort and we will be in touch. Students sign in to the Learning Hub to view previous classes, access resources and submit weekly assignments.",
@@ -152,6 +168,14 @@ export const programmes = [
   },
   {
     slug: "masterclass",
+    metaTitle: "Masterclass: Online Classes for Adults and Parents",
+    metaDescription: "GCCMI Masterclass offers affordable online classes for adults: intentional parenting, mental health, business and creative skills. Join live or watch later.",
+    faqs: [
+      { q: "Who is the Masterclass for?", a: "It is created for adults of all skill levels, including parents who want practical support alongside their children’s learning." },
+      { q: "Can I join at any time?", a: "Yes. The Masterclass is a rolling programme, so students can join at any time." },
+      { q: "Do I have to attend live?", a: "No. You can join live sessions and answer questions afterwards, or watch the class webinar video later." },
+      { q: "Do GCC parents get a discount?", a: "Yes. GCC parents receive discounted fees and further learning facilities." },
+    ],
     name: "Masterclass",
     short: "Online classes created for adults of all skill levels: remote, dynamic, flexible, empowering, affordable and tailored.",
     registration: "Register and a member of our team will contact you. GCC parents receive discounted fees and further learning facilities.",

@@ -1,12 +1,19 @@
+import { JsonLd } from "@/components/JsonLd";
+import { breadcrumbSchema, pageMeta } from "@/lib/seo";
 import Image from "next/image";
 import { Container, PageHero, SectionHeading } from "@/components/ui";
 import { instructorGroups } from "@/lib/instructors";
 
-export const metadata = { title: "Our instructors" };
+export const metadata = pageMeta({
+  title: "Our Instructors and Team",
+  description: "Meet the Bible Club teachers, Academy instructors and team members who teach children and support families at GCC Ministry International.",
+  path: "/instructors",
+});
 
 export default function Instructors() {
   return (
     <>
+      <JsonLd data={breadcrumbSchema([{ name: "Instructors", path: "/instructors" }])} />
       <PageHero title="Our instructors" body="The teachers, leaders and mentors behind our Academy, Bible Club and Masterclass." />
       <Container className="space-y-16 py-14">
         {instructorGroups.map((g, gi) => (

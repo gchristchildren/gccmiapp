@@ -1,6 +1,7 @@
+import { noIndex } from "@/lib/seo";
 import { ButtonLink, Container, PageHero } from "@/components/ui";
 
-export const metadata = { title: "Thank you" };
+export const metadata = { title: "Thank you", ...noIndex };
 
 export default function Thanks() {
   return (

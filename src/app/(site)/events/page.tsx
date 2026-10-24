@@ -1,3 +1,5 @@
+import { JsonLd } from "@/components/JsonLd";
+import { abs, breadcrumbSchema, pageMeta } from "@/lib/seo";
 import Link from "next/link";
 import { EventCard } from "@/components/EventCard";
 import { Container, PageHero, SectionHeading } from "@/components/ui";
@@ -5,7 +7,11 @@ import { eventCategories, splitEvents, type EventCategory } from "@/lib/content"
 import { fetchPublicEvents } from "@/lib/events";
 import { createClient } from "@/lib/supabase/server";
 
-export const metadata = { title: "Events" };
+export const metadata = pageMeta({
+  title: "Events, Workshops and Conferences",
+  description: "Upcoming GCCMI events: Bible Quiz, Easter, Summer and Christmas events, parenting workshops and the annual international parenting conference.",
+  path: "/events",
+});
 
 export default async function Events({ searchParams }: { searchParams: Promise<{ category?: string }> }) {
   const { category } = await searchParams;
@@ -27,6 +33,25 @@ export default async function Events({ searchParams }: { searchParams: Promise<{
 
   return (
     <>
+      <JsonLd
+        data={[
+          breadcrumbSchema([{ name: "Events", path: "/events" }]),
+          ...upcoming.map((e) => ({
+            "@context": "https://schema.org",
+            "@type": "Event",
+            name: e.title,
+            description: e.summary || undefined,
+            startDate: e.date,
+            eventStatus: "https://schema.org/EventScheduled",
+            eventAttendanceMode: "https://schema.org/MixedEventAttendanceMode",
+            location: { "@type": "Place", name: e.venue, address: e.address || e.venue },
+            organizer: { "@id": abs("/#organization") },
+            url: abs("/events"),
+            isAccessibleForFree: true,
+            offers: { "@type": "Offer", url: e.registerUrl ?? abs("/events"), price: "0", priceCurrency: "GBP", availability: "https://schema.org/InStock" },
+          })),
+        ]}
+      />
       <PageHero title="Events" body="Bible Club, Academy, Masterclass, charity outreach and community events." />
       <Container className="py-12">
         <nav className="flex flex-wrap gap-2" aria-label="Event categories">

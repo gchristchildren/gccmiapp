@@ -1,4 +1,5 @@
 import { ArrowRight, BookOpen, GraduationCap, HandHeart, Heart, Library, ShoppingBag, Users } from "lucide-react";
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { EventCard } from "@/components/EventCard";
@@ -17,7 +18,20 @@ import {
 import { fetchPublicEvents } from "@/lib/events";
 import { galleryPhotos } from "@/lib/gallery";
 import { fetchPosts } from "@/lib/posts";
+import { faqSchema, pageMeta } from "@/lib/seo";
 import { site } from "@/lib/site";
+import { JsonLd } from "@/components/JsonLd";
+
+const homeTitle = `${site.name} | Free Online Bible Club for Children, Academy & Masterclass`;
+export const metadata: Metadata = {
+  ...pageMeta({
+    title: homeTitle,
+    description:
+      "GCC Ministry International runs a free online Bible Club for Christian children worldwide, plus Academy, Masterclass and parenting support, from Edinburgh, UK.",
+    path: "/",
+  }),
+  title: { absolute: homeTitle },
+};
 
 // Rendered fresh on each visit so admin edits (posts, events) show immediately.
 export const dynamic = "force-dynamic";
@@ -39,6 +53,7 @@ export default async function Home() {
 
   return (
     <>
+      <JsonLd data={faqSchema(faqs)} />
       {/* Hero */}
       <section className="hero-bg relative -mt-[68px] overflow-hidden pt-[68px]">
         <Container className="pb-16 pt-14 text-center sm:pb-24 sm:pt-20">
@@ -232,7 +247,7 @@ export default async function Home() {
           <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
             {galleryPhotos.slice(0, 6).map((ph, i) => (
               <Link key={ph.src} href="/gallery" className="group relative block aspect-square overflow-hidden rounded-2xl border border-line">
-                <Image src={ph.src} alt="GCCMI event photo" fill sizes="(min-width:1024px) 16vw, (min-width:640px) 33vw, 50vw" className="object-cover transition duration-300 group-hover:scale-105" priority={i < 2} />
+                <Image src={ph.src} alt="GCCMI Bible Club and community event photo" fill sizes="(min-width:1024px) 16vw, (min-width:640px) 33vw, 50vw" className="object-cover transition duration-300 group-hover:scale-105" priority={i < 2} />
               </Link>
             ))}
           </div>
@@ -254,7 +269,7 @@ export default async function Home() {
                 <Link key={post.id} href={`/blog/${post.slug}`} className="group flex flex-col overflow-hidden rounded-3xl border border-line bg-surface shadow-card transition hover:-translate-y-1">
                   {post.cover_url && (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={post.cover_url} alt="" className="aspect-video w-full object-cover" loading="lazy" />
+                    <img src={post.cover_url} alt={post.title} className="aspect-video w-full object-cover" loading="lazy" />
                   )}
                   <div className="p-5">
                     <p className="text-xs text-muted">{new Date(post.published_at).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "Europe/London" })}</p>

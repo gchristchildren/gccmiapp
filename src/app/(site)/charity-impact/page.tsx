@@ -1,12 +1,19 @@
+import { JsonLd } from "@/components/JsonLd";
+import { breadcrumbSchema, pageMeta } from "@/lib/seo";
 import { ButtonLink, Card, Container, PageHero, SectionHeading } from "@/components/ui";
 import { site } from "@/lib/site";
 import { impactAreas, impactStats, SHOW_SAMPLE_BADGES } from "@/lib/content";
 
-export const metadata = { title: "Charity impact" };
+export const metadata = pageMeta({
+  title: "Charity Impact and Outreach",
+  description: "See how GCC Ministry International serves families through community projects, school support, food donations, outreach programmes and volunteering.",
+  path: "/charity-impact",
+});
 
 export default function CharityImpact() {
   return (
     <>
+      <JsonLd data={breadcrumbSchema([{ name: "Charity impact", path: "/charity-impact" }])} />
       <PageHero
         title="See the difference your support makes"
         body="Community projects, school support, food donations, outreach and volunteering."

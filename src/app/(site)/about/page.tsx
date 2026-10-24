@@ -1,14 +1,21 @@
+import { JsonLd } from "@/components/JsonLd";
+import { breadcrumbSchema, abs, pageMeta } from "@/lib/seo";
 import { ButtonLink, Card, Container, PageHero, SectionHeading } from "@/components/ui";
 import { impactStats } from "@/lib/content";
 import { site } from "@/lib/site";
 
-export const metadata = { title: "About GCCMI" };
+export const metadata = pageMeta({
+  title: "About Us: Our Mission, Values and Story",
+  description: "Learn about GCC Ministry International, an Edinburgh charity running a free online Bible Club since 2016, plus Academy, Masterclass and parenting support.",
+  path: "/about",
+});
 
 const values = ["Excellence", "Integrity", "Social Responsibility", "Trustworthiness", "Commitment", "Passion"];
 
 export default function About() {
   return (
     <>
+      <JsonLd data={[breadcrumbSchema([{ name: "About", path: "/about" }]), { "@context": "https://schema.org", "@type": "AboutPage", name: "About GCC Ministry International", url: abs("/about"), about: { "@id": abs("/#organization") } }]} />
       <PageHero title={`About ${site.legalName}`} body="Our story, our vision and the values we hold." />
       <Container className="space-y-20 py-16">
         <section className="grid gap-8 md:grid-cols-2">

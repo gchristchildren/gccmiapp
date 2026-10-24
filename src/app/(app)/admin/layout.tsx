@@ -1,6 +1,9 @@
 import { Bell, BellRing, BookOpen, CalendarDays, FileText, GraduationCap, HandHeart, Newspaper, Heart, LayoutDashboard, ListChecks, UserRound, Users } from "lucide-react";
 import { AppShell } from "@/components/app/AppShell";
 import { requireAdmin } from "@/lib/auth";
+import { noIndex } from "@/lib/seo";
+
+export const metadata = noIndex;
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const { profile, user } = await requireAdmin();

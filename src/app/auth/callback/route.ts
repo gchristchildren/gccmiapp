@@ -13,5 +13,5 @@ export async function GET(request: Request) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) return NextResponse.redirect(`${origin}${safeNext}`);
   }
-  return NextResponse.redirect(`${origin}/login?error=auth`);
+  return NextResponse.redirect(safeNext === "/reset-password" ? `${origin}/forgot-password?error=expired` : `${origin}/login?error=auth`);
 }

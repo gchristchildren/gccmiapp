@@ -1,6 +1,9 @@
 import { Bell, CalendarDays, FileText, GraduationCap, HandHeart, Home, Settings2, Users } from "lucide-react";
 import { AppShell } from "@/components/app/AppShell";
 import { requireUser } from "@/lib/auth";
+import { noIndex } from "@/lib/seo";
+
+export const metadata = noIndex;
 
 export default async function PortalLayout({ children }: { children: React.ReactNode }) {
   const { profile, user } = await requireUser();
