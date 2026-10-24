@@ -4,6 +4,7 @@ import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { nav } from "@/lib/site";
+import { AuthLink } from "./AuthLink";
 
 export function MobileNav() {
   const [open, setOpen] = useState(false);
@@ -20,7 +21,7 @@ export function MobileNav() {
       </button>
       {open && (
         <nav className="absolute inset-x-0 top-full mt-2 rounded-3xl border border-line bg-surface p-3 shadow-card">
-          {[...nav, { href: "/portal", label: "Sign in" }].map((n) => (
+          {nav.map((n) => (
             <Link
               key={n.href}
               href={n.href}
@@ -30,6 +31,7 @@ export function MobileNav() {
               {n.label}
             </Link>
           ))}
+          <AuthLink variant="mobile" onNavigate={() => setOpen(false)} />
         </nav>
       )}
     </div>

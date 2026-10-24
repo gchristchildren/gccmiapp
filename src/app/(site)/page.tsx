@@ -3,7 +3,6 @@ import Link from "next/link";
 import { EventCard } from "@/components/EventCard";
 import { ButtonLink, Card, Container, SectionHeading } from "@/components/ui";
 import {
-  SHOW_SAMPLE_BADGES,
   faqs,
   featuredProject,
   formatDate,
@@ -11,7 +10,6 @@ import {
   programmes,
   testimonials,
   splitEvents,
-  books,
 } from "@/lib/content";
 import { fetchPublicEvents } from "@/lib/events";
 import { site } from "@/lib/site";
@@ -79,7 +77,6 @@ export default async function Home() {
               <p className="text-xs font-medium text-muted">Community impact</p>
               <p className="mt-1 text-3xl font-bold text-brand">{impactStats[0].value}</p>
               <p className="text-sm text-muted">{impactStats[0].label}</p>
-              {SHOW_SAMPLE_BADGES && <p className="mt-2 text-[11px] font-medium text-gold">Sample figure</p>}
             </Card>
           </div>
         </Container>
@@ -109,7 +106,11 @@ export default async function Home() {
       <section className="py-20">
         <Container>
           <div className="flex flex-wrap items-end justify-between gap-4">
-            <SectionHeading eyebrow="Programmes" title="Learn, grow and belong with GCCMI" />
+            <SectionHeading
+              eyebrow="Programmes"
+              title="Learn, grow and belong with GCCMI"
+              body="Our primary assignment is to teach Christian children the Word of God and to empower them to be relevant in every area of life."
+            />
             <ButtonLink href="/about" variant="secondary">
               About GCCMI
             </ButtonLink>
@@ -187,28 +188,24 @@ export default async function Home() {
       <section className="py-4">
         <Container>
           <div className="flex flex-wrap items-end justify-between gap-4">
-            <SectionHeading eyebrow="Books" title="Books to inspire your family" sample />
+            <SectionHeading eyebrow="Books" title="Bible lessons for your children" />
             <ButtonLink href="/books" variant="secondary">
-              All books
+              Books &amp; store
             </ButtonLink>
           </div>
-          <div className="mt-10 grid grid-cols-2 gap-5 md:grid-cols-4">
-            {books.map((b) => (
-              <a
-                key={b.title}
-                href={b.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group rounded-3xl border border-line bg-surface p-4 shadow-card transition hover:-translate-y-1"
-              >
-                <div className="grid aspect-[3/4] place-items-center rounded-2xl bg-gradient-to-br from-brand to-emerald-900 p-4 text-center text-sm font-bold text-white">
-                  {b.title}
-                </div>
-                <p className="mt-3 text-sm font-semibold">{b.title}</p>
-                <p className="text-sm text-brand">Buy on Amazon →</p>
-              </a>
-            ))}
-          </div>
+          <Card className="mt-10 flex flex-wrap items-center justify-between gap-5">
+            <p className="max-w-xl text-muted">
+              Our children&apos;s books are available on Amazon. You can buy them securely there, and browse more in our store.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <ButtonLink href={site.amazonBooks} external>
+                Buy on Amazon
+              </ButtonLink>
+              <ButtonLink href={site.store} variant="secondary" external>
+                Visit our store
+              </ButtonLink>
+            </div>
+          </Card>
         </Container>
       </section>
 

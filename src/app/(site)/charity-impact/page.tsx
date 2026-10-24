@@ -17,7 +17,7 @@ export default function CharityImpact() {
       </PageHero>
       <Container className="space-y-20 py-16">
         <section>
-          <SectionHeading title="Our impact in numbers" sample />
+          <SectionHeading title="GCCMI at a glance" />
           <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
             {impactStats.map((s) => (
               <Card key={s.label}>

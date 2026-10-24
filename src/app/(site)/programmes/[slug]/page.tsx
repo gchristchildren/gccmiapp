@@ -53,7 +53,9 @@ export default async function Programme({ params }: { params: Promise<{ slug: st
           <h2 className="text-xl font-bold">How to register</h2>
           <p className="mt-3 text-sm text-muted">{p.registration}</p>
           <p className="mt-3 text-sm text-muted">
-            Online registration opens with the parent portal. Until then, see upcoming events for dates.
+            {p.slug === "academy"
+              ? "Already a student? Sign in to the Learning Hub for previous classes, resources and weekly assignments."
+              : "Register in the parent portal, or see upcoming events for dates."}
           </p>
           <div className="mt-5 flex flex-wrap gap-3">
             <ButtonLink href={p.slug === "masterclass" ? "/portal/masterclass" : "/portal"}>{p.slug === "masterclass" ? "Register in the portal" : "Parent portal"}</ButtonLink>
@@ -62,6 +64,23 @@ export default async function Programme({ params }: { params: Promise<{ slug: st
             </ButtonLink>
           </div>
         </Card>
+        {!!p.sections?.length && (
+          <div className="grid gap-6 md:col-span-2 md:grid-cols-2">
+            {p.sections.map((sec) => (
+              <Card key={sec.title}>
+                <h2 className="text-xl font-bold">{sec.title}</h2>
+                <ul className="mt-4 space-y-2.5 text-sm">
+                  {sec.items.map((it) => (
+                    <li key={it} className="flex gap-3">
+                      <Check className="mt-0.5 size-4 shrink-0 text-brand" />
+                      {it}
+                    </li>
+                  ))}
+                </ul>
+              </Card>
+            ))}
+          </div>
+        )}
         {!!courses?.length && (
           <div className="space-y-4 md:col-span-2">
             <h2 className="text-xl font-bold">Courses</h2>

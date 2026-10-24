@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { nav } from "@/lib/site";
 import { Logo } from "./Logo";
+import { AuthLink } from "./AuthLink";
 import { MobileNav } from "./MobileNav";
 import { ThemeToggle } from "./ThemeToggle";
 
@@ -18,9 +19,7 @@ export function SiteHeader() {
         </nav>
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          <Link href="/portal" className="hidden rounded-full px-3 py-1.5 text-sm font-medium text-muted hover:text-fg md:block">
-            Sign in
-          </Link>
+          <AuthLink />
           <Link href="/donate" className="rounded-full bg-brand px-4 py-2 text-sm font-semibold text-brand-fg transition hover:opacity-90">
             Donate
           </Link>

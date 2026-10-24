@@ -1,56 +1,83 @@
 import { ButtonLink, Card, Container, PageHero, SectionHeading } from "@/components/ui";
-import { impactStats, SHOW_SAMPLE_BADGES } from "@/lib/content";
+import { impactStats } from "@/lib/content";
+import { site } from "@/lib/site";
 
 export const metadata = { title: "About GCCMI" };
 
-// TODO(owner): replace placeholder copy with the story, mission, vision and leadership from gccmi.co.uk.
+const values = ["Excellence", "Integrity", "Social Responsibility", "Trustworthiness", "Commitment", "Passion"];
+
 export default function About() {
   return (
     <>
-      <PageHero
-        title="About GCC Ministry International"
-        body="Our story, our mission and the people behind GCCMI."
-      />
+      <PageHero title={`About ${site.legalName}`} body="Our story, our vision and the values we hold." />
       <Container className="space-y-20 py-16">
-        {SHOW_SAMPLE_BADGES && (
-          <p className="rounded-2xl bg-gold-soft px-4 py-3 text-sm text-gold">
-            Placeholder copy. The final text will come from gccmi.co.uk.
-          </p>
-        )}
         <section className="grid gap-8 md:grid-cols-2">
           <div>
             <SectionHeading eyebrow="Who we are" title="Our story" />
-            <p className="mt-4 text-muted">
-              GCC Ministry International (GCCMI) is a UK-based ministry serving children, families and communities
-              through Bible Club, the Academy, Masterclass and charity outreach. Replace this paragraph with the
-              founding story.
-            </p>
+            <div className="mt-4 space-y-4 text-muted">
+              <p>
+                We are {site.legalName}. We reach out to children near and far to support them with learning facilities
+                through programmes such as our free Online Bible Club (since 2016) and Academy for Kids.
+              </p>
+              <p>
+                We understand that ministering to children means ministering to their families, especially their parents.
+                So we have put in place programmes to support parents too, including our free annual Parenting Conference,
+                chat shows and three-minute talks with parents.
+              </p>
+              <p>
+                We are a non-profit charitable trust that has grown over the past few years, supported by the Joy King
+                Foundation and by parents who believe in us.
+              </p>
+            </div>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <ButtonLink href="/donate">Support us</ButtonLink>
+              <ButtonLink href="/programmes/bible-club" variant="secondary">
+                Join Bible Club
+              </ButtonLink>
+            </div>
           </div>
-          <div className="grid gap-4">
-            <Card>
-              <h3 className="font-bold">Mission</h3>
-              <p className="mt-2 text-sm text-muted">Mission statement to be added.</p>
-            </Card>
-            <Card>
-              <h3 className="font-bold">Vision</h3>
-              <p className="mt-2 text-sm text-muted">Vision statement to be added.</p>
-            </Card>
+          <div className="overflow-hidden rounded-3xl border border-line bg-surface shadow-card">
+            <iframe
+              src={site.aboutVideo}
+              title="About GCCMI"
+              className="aspect-video w-full"
+              allow="accelerometer; encrypted-media; picture-in-picture; fullscreen"
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="strict-origin-when-cross-origin"
+            />
           </div>
         </section>
+
+        <section className="grid gap-5 md:grid-cols-2">
+          <Card>
+            <h2 className="font-bold">Vision</h2>
+            <p className="mt-2 text-muted">
+              To empower Christian children with necessary information that will be relevant to their life journey.
+            </p>
+          </Card>
+          <Card>
+            <h2 className="font-bold">Why parents choose us</h2>
+            <p className="mt-2 text-muted">
+              Our primary assignment is to teach Christian children the Word of God and to empower them to be relevant in
+              every area of life.
+            </p>
+          </Card>
+        </section>
+
         <section>
-          <SectionHeading eyebrow="Leadership" title="Founder and leadership" />
-          <div className="mt-8 grid gap-5 sm:grid-cols-3">
-            {["Founder", "Leader", "Leader"].map((role, i) => (
-              <Card key={i}>
-                <div className="aspect-square rounded-2xl bg-brand-soft" />
-                <p className="mt-4 font-semibold">Name to be added</p>
-                <p className="text-sm text-muted">{role}</p>
+          <SectionHeading eyebrow="Core values" title="What we stand for" />
+          <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-3">
+            {values.map((v) => (
+              <Card key={v} className="p-5 text-center font-semibold">
+                {v}
               </Card>
             ))}
           </div>
         </section>
+
         <section>
-          <SectionHeading eyebrow="Impact" title="Impact and achievements" />
+          <SectionHeading eyebrow="At a glance" title="GCCMI at a glance" />
           <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
             {impactStats.map((s) => (
               <Card key={s.label}>
@@ -60,15 +87,15 @@ export default function About() {
             ))}
           </div>
         </section>
+
         <section>
-          <SectionHeading eyebrow="Gallery" title="Photos and videos" body="Photo and video galleries will be added here." />
-          <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="aspect-square rounded-3xl border border-line bg-brand-soft" />
-            ))}
+          <SectionHeading eyebrow="Follow us" title="Photos, videos and updates" body="See what's happening across GCCMI on our social channels." />
+          <div className="mt-6 flex flex-wrap gap-3">
+            <ButtonLink href={site.social.youtube} variant="secondary" external>YouTube</ButtonLink>
+            <ButtonLink href={site.social.instagram} variant="secondary" external>Instagram</ButtonLink>
+            <ButtonLink href={site.social.facebook} variant="secondary" external>Facebook group</ButtonLink>
           </div>
         </section>
-        <ButtonLink href="/volunteer">Get involved</ButtonLink>
       </Container>
     </>
   );
