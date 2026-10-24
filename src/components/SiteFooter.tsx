@@ -21,10 +21,11 @@ export function SiteFooter() {
                 <Link href={n.href} className="hover:text-fg">{n.label}</Link>
               </li>
             ))}
-            <li><Link href="/donate" className="hover:text-fg">Donate</Link></li>
+            <li><a href={site.donateUrl} target="_blank" rel="noopener noreferrer" className="hover:text-fg">Donate</a></li>
             <li><Link href="/contact" className="hover:text-fg">Contact</Link></li>
             <li><a href={site.store} target="_blank" rel="noopener noreferrer" className="hover:text-fg">Store</a></li>
-            <li><a href={site.blog} target="_blank" rel="noopener noreferrer" className="hover:text-fg">Blog</a></li>
+            <li><Link href="/gallery" className="hover:text-fg">Gallery</Link></li>
+            <li><Link href="/instructors" className="hover:text-fg">Our instructors</Link></li>
           </ul>
         </div>
         <div>

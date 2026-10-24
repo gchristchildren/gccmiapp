@@ -30,9 +30,15 @@ export default function About() {
               </p>
             </div>
             <div className="mt-6 flex flex-wrap gap-3">
-              <ButtonLink href="/donate">Support us</ButtonLink>
+              <ButtonLink href={site.donateUrl} external>Support us</ButtonLink>
               <ButtonLink href="/programmes/bible-club" variant="secondary">
                 Join Bible Club
+              </ButtonLink>
+              <ButtonLink href="/instructors" variant="secondary">
+                Meet our instructors
+              </ButtonLink>
+              <ButtonLink href="/gallery" variant="secondary">
+                Gallery
               </ButtonLink>
             </div>
           </div>

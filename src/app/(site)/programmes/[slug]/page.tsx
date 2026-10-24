@@ -62,6 +62,9 @@ export default async function Programme({ params }: { params: Promise<{ slug: st
             <ButtonLink href="/events" variant="secondary">
               Upcoming events
             </ButtonLink>
+            <ButtonLink href="/instructors" variant="secondary">
+              Our instructors
+            </ButtonLink>
           </div>
         </Card>
         {!!p.sections?.length && (

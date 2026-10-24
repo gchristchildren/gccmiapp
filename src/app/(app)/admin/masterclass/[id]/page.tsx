@@ -3,13 +3,14 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Card } from "@/components/ui";
 import { requireAdmin } from "@/lib/auth";
-import { addLesson, addResource, deleteLesson, deleteResource, setCoursePublished } from "@/lib/actions/masterclass";
+import { ConfirmButton } from "@/components/ConfirmButton";
+import { addLesson, addResource, deleteCourse, deleteLesson, deleteResource, setCoursePublished, updateCourse } from "@/lib/actions/masterclass";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminCourse({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ error?: string }> }) {
+export default async function AdminCourse({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ error?: string; updated?: string }> }) {
   const { id } = await params;
-  const { error } = await searchParams;
+  const { error, updated } = await searchParams;
   const { supabase } = await requireAdmin();
   const { data: course } = await supabase.from("courses").select("*").eq("id", id).maybeSingle();
   if (!course) notFound();
@@ -33,6 +34,27 @@ export default async function AdminCourse({ params, searchParams }: { params: Pr
         </form>
       </div>
       {error && <p role="alert" className="rounded-2xl bg-red-500/10 px-4 py-3 text-sm text-red-600 dark:text-red-400">{error}</p>}
+      {updated && <p role="status" className="rounded-2xl bg-brand-soft px-4 py-3 text-sm text-brand">Course updated.</p>}
+
+      <Card>
+        <details>
+          <summary className="cursor-pointer font-bold">Edit course details</summary>
+          <form action={updateCourse} className="mt-4 grid gap-4 sm:grid-cols-2">
+            <input type="hidden" name="id" value={course.id} />
+            <label className="text-sm font-medium sm:col-span-2">Title<input name="title" required defaultValue={course.title} className={input} /></label>
+            <label className="text-sm font-medium sm:col-span-2">Description<textarea name="description" rows={3} defaultValue={course.description} className={input} /></label>
+            <label className="text-sm font-medium">Schedule<input name="schedule_note" defaultValue={course.schedule_note} className={input} /></label>
+            <label className="text-sm font-medium">Starts<input name="starts_on" type="date" defaultValue={course.starts_on ?? ""} className={input} /></label>
+            <button className="rounded-full bg-brand px-6 py-2.5 text-sm font-semibold text-brand-fg hover:opacity-90 sm:w-fit">Save changes</button>
+          </form>
+        </details>
+        <form action={deleteCourse} className="mt-5 border-t border-line pt-4">
+          <input type="hidden" name="id" value={course.id} />
+          <ConfirmButton message={`Delete "${course.title}"? Its lessons, downloads, members' progress and certificates will be deleted too. This cannot be undone.`} className="rounded-full border border-red-500/40 px-5 py-2.5 text-sm font-semibold text-red-600 hover:bg-red-500/10 dark:text-red-400">
+            Delete course
+          </ConfirmButton>
+        </form>
+      </Card>
 
       <Card>
         <h2 className="font-bold">Lessons</h2>

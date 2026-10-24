@@ -6,8 +6,8 @@ import { createCourse, setMembershipStatus } from "@/lib/actions/masterclass";
 export const metadata = { title: "Masterclass" };
 export const dynamic = "force-dynamic";
 
-export default async function AdminMasterclass({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
-  const { error } = await searchParams;
+export default async function AdminMasterclass({ searchParams }: { searchParams: Promise<{ error?: string; deleted?: string }> }) {
+  const { error, deleted } = await searchParams;
   const { supabase } = await requireAdmin();
   const [{ data: courses }, { data: members }, { data: lessons }, { data: certs }, { data: profiles }] = await Promise.all([
     supabase.from("courses").select("*").order("created_at", { ascending: false }),
@@ -24,6 +24,7 @@ export default async function AdminMasterclass({ searchParams }: { searchParams:
     <div className="mx-auto max-w-4xl space-y-6">
       <h1 className="text-2xl font-bold">Masterclass</h1>
       {error && <p role="alert" className="rounded-2xl bg-red-500/10 px-4 py-3 text-sm text-red-600 dark:text-red-400">{error}</p>}
+      {deleted && <p role="status" className="rounded-2xl bg-brand-soft px-4 py-3 text-sm text-brand">Course deleted.</p>}
 
       <Card>
         <h2 className="font-bold">Registrations <span className="ml-1 rounded-full bg-line px-2 py-0.5 text-xs">{pending.length} pending</span></h2>

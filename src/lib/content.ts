@@ -46,6 +46,10 @@ export type GccEvent = {
   registerUrl?: string;
 };
 
+export const coreValues = ["Excellence", "Integrity", "Social Responsibility", "Trustworthiness", "Commitment", "Passion"];
+
+export const academySubjectsShort = "Maths, English, Coding, Web Design and more";
+
 export const impactStats = [
   { value: "2016", label: "Free online Bible Club running since" },
   { value: "Free", label: "Bible Club for every Christian child worldwide" },

@@ -129,3 +129,33 @@ export async function setMembershipStatus(f: FormData) {
   revalidatePath("/admin", "layout");
   revalidatePath("/portal/masterclass", "layout");
 }
+
+export async function updateCourse(f: FormData) {
+  const { supabase } = await requireAdmin();
+  const id = text(f, "id");
+  const page = `/admin/masterclass/${id}`;
+  if (!text(f, "title")) fail(page, "A course title is required.");
+  const { data, error } = await supabase.from("courses").update({
+    title: text(f, "title"),
+    description: text(f, "description"),
+    schedule_note: text(f, "schedule_note"),
+    starts_on: text(f, "starts_on") || null,
+  }).eq("id", id).select("id");
+  if (error || !data?.length) fail(page, "That change didn't go through.");
+  revalidatePath("/admin/masterclass", "layout");
+  revalidatePath("/portal/masterclass", "layout");
+  revalidatePath("/programmes/masterclass");
+  redirect(`${page}?updated=1`);
+}
+
+export async function deleteCourse(f: FormData) {
+  const { supabase } = await requireAdmin();
+  const id = text(f, "id");
+  // Lessons, downloads, progress and certificates for this course are deleted with it.
+  const { data, error } = await supabase.from("courses").delete().eq("id", id).select("id");
+  if (error || !data?.length) fail(`/admin/masterclass/${id}`, "That change didn't go through.");
+  revalidatePath("/admin/masterclass", "layout");
+  revalidatePath("/portal/masterclass", "layout");
+  revalidatePath("/programmes/masterclass");
+  redirect("/admin/masterclass?deleted=1");
+}

@@ -1,8 +1,11 @@
 import { ArrowRight, BookOpen, GraduationCap, HandHeart, Heart, Library, ShoppingBag, Users } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { EventCard } from "@/components/EventCard";
 import { ButtonLink, Card, Container, SectionHeading } from "@/components/ui";
 import {
+  academySubjectsShort,
+  coreValues,
   faqs,
   featuredProject,
   formatDate,
@@ -12,22 +15,26 @@ import {
   splitEvents,
 } from "@/lib/content";
 import { fetchPublicEvents } from "@/lib/events";
+import { galleryPhotos } from "@/lib/gallery";
+import { fetchPosts } from "@/lib/posts";
 import { site } from "@/lib/site";
 
-export const revalidate = 300;
+// Rendered fresh on each visit so admin edits (posts, events) show immediately.
+export const dynamic = "force-dynamic";
 
-const quickLinks = [
+const quickLinks: { href: string; label: string; icon: typeof BookOpen; external?: boolean }[] = [
   { href: "/programmes/bible-club", label: "Register for Bible Club", icon: BookOpen },
   { href: "/programmes/academy", label: "Register for Academy", icon: GraduationCap },
   { href: "/programmes/masterclass", label: "Register for Masterclass", icon: Library },
-  { href: "/donate", label: "Donate", icon: Heart },
+  { href: site.donateUrl, label: "Donate", icon: Heart, external: true },
   { href: "/books", label: "Shop Books", icon: ShoppingBag },
 ];
 
 const programmeIcons = [BookOpen, GraduationCap, Library];
 
 export default async function Home() {
-  const { upcoming } = splitEvents(await fetchPublicEvents());
+  const [events, posts] = await Promise.all([fetchPublicEvents(), fetchPosts(3)]);
+  const { upcoming } = splitEvents(events);
   const next = upcoming[0];
 
   return (
@@ -36,18 +43,25 @@ export default async function Home() {
       <section className="hero-bg relative -mt-[68px] overflow-hidden pt-[68px]">
         <Container className="pb-16 pt-14 text-center sm:pb-24 sm:pt-20">
           <p className="mx-auto mb-4 w-fit rounded-full border border-line bg-surface/80 px-4 py-1.5 text-xs font-medium text-muted">
-            Welcome to the GCCMI community hub
+            {site.legalName}
           </p>
           <h1 className="mx-auto max-w-3xl text-4xl font-bold leading-[1.1] tracking-tight sm:text-6xl">
-            Raising children, strengthening families, serving communities
+            Welcome to GCC Ministry International
           </h1>
-          <p className="mx-auto mt-5 max-w-xl text-muted sm:text-lg">
-            Bible Club for children, the Academy and Masterclass for learning, and charity outreach that makes a
-            difference. All in one place.
+          <p className="mx-auto mt-5 max-w-2xl text-muted sm:text-lg">
+            Welcome to {site.legalName}, a citadel of first-class learning, with educative, empowering and inspiring
+            programmes and activities for children as well as parents.
+          </p>
+          <p className="mx-auto mt-3 max-w-2xl text-muted">
+            Both children and parents have been benefitting from our programmes, especially our annual international
+            parenting workshop. We foster a love for learning within a safe, purposeful and nurturing online environment.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <ButtonLink href="/programmes/bible-club">Register for Bible Club</ButtonLink>
-            <ButtonLink href="/donate" variant="secondary">
+            <ButtonLink href="/about">About Us</ButtonLink>
+            <ButtonLink href="/programmes/bible-club" variant="secondary">
+              Programmes
+            </ButtonLink>
+            <ButtonLink href={site.donateUrl} variant="secondary" external>
               <Heart className="size-4" /> Donate
             </ButtonLink>
           </div>
@@ -86,18 +100,58 @@ export default async function Home() {
       <section className="-mt-6 relative z-10">
         <Container>
           <div className="grid grid-cols-2 gap-3 rounded-3xl border border-line bg-surface p-3 shadow-card sm:grid-cols-3 lg:grid-cols-5">
-            {quickLinks.map(({ href, label, icon: Icon }) => (
-              <Link
-                key={href}
-                href={href}
-                className="group flex items-center gap-3 rounded-2xl p-3 text-sm font-semibold transition hover:bg-brand-soft"
-              >
-                <span className="grid size-9 shrink-0 place-items-center rounded-full bg-brand-soft text-brand group-hover:bg-surface">
-                  <Icon className="size-4" />
-                </span>
-                {label}
+            {quickLinks.map(({ href, label, icon: Icon, external }) => {
+              const cls = "group flex items-center gap-3 rounded-2xl p-3 text-sm font-semibold transition hover:bg-brand-soft";
+              const inner = (
+                <>
+                  <span className="grid size-9 shrink-0 place-items-center rounded-full bg-brand-soft text-brand group-hover:bg-surface">
+                    <Icon className="size-4" />
+                  </span>
+                  {label}
+                </>
+              );
+              return external ? (
+                <a key={href} href={href} target="_blank" rel="noopener noreferrer" className={cls}>{inner}</a>
+              ) : (
+                <Link key={href} href={href} className={cls}>{inner}</Link>
+              );
+            })}
+          </div>
+        </Container>
+      </section>
+
+      {/* We are GCCMI + core values */}
+      <section className="pt-20">
+        <Container>
+          <div className="grid gap-5 lg:grid-cols-[1.2fr_1fr]">
+            <Card className="p-8 sm:p-10">
+              <SectionHeading eyebrow="We are GCCMI" title="A non-profit charitable trust serving children and parents" />
+              <p className="mt-4 max-w-xl text-muted">
+                We are a non-profit making charitable trust that has successfully grown over the past few years, supported
+                by the Joy King Foundation and by some of our parents who believe in us.
+              </p>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <ButtonLink href={site.donateUrl} external>
+                  <HandHeart className="size-4" /> Support us
+                </ButtonLink>
+                <ButtonLink href="/about" variant="secondary">
+                  About us
+                </ButtonLink>
+              </div>
+            </Card>
+            <Card className="p-8 sm:p-10">
+              <h2 className="text-xl font-bold">Our core values</h2>
+              <ul className="mt-4 flex flex-wrap gap-2">
+                {coreValues.map((v) => (
+                  <li key={v} className="rounded-full bg-brand-soft px-4 py-1.5 text-sm font-medium text-brand">
+                    {v}
+                  </li>
+                ))}
+              </ul>
+              <Link href="/about" className="mt-6 inline-flex items-center gap-1 text-sm font-semibold text-brand">
+                Learn more <ArrowRight className="size-4" />
               </Link>
-            ))}
+            </Card>
           </div>
         </Container>
       </section>
@@ -106,14 +160,7 @@ export default async function Home() {
       <section className="py-20">
         <Container>
           <div className="flex flex-wrap items-end justify-between gap-4">
-            <SectionHeading
-              eyebrow="Programmes"
-              title="Learn, grow and belong with GCCMI"
-              body="Our primary assignment is to teach Christian children the Word of God and to empower them to be relevant in every area of life."
-            />
-            <ButtonLink href="/about" variant="secondary">
-              About GCCMI
-            </ButtonLink>
+            <SectionHeading eyebrow="Programmes" title="Learn, grow and belong with GCCMI" />
           </div>
           <div className="mt-10 grid gap-5 md:grid-cols-3">
             {programmes.map((p, i) => {
@@ -125,6 +172,7 @@ export default async function Home() {
                   </span>
                   <h3 className="mt-4 text-xl font-bold">{p.name}</h3>
                   <p className="mt-2 text-sm text-muted">{p.short}</p>
+                  {p.slug === "academy" && <p className="mt-2 text-xs font-medium text-brand">{academySubjectsShort}</p>}
                   <Link
                     href={`/programmes/${p.slug}`}
                     className="mt-5 inline-flex items-center gap-1 pt-1 text-sm font-semibold text-brand"
@@ -134,6 +182,22 @@ export default async function Home() {
                 </Card>
               );
             })}
+          </div>
+        </Container>
+      </section>
+
+      {/* Why parents choose us */}
+      <section className="pb-4">
+        <Container>
+          <div className="hero-bg flex flex-wrap items-center justify-between gap-6 rounded-3xl border border-line px-8 py-10 sm:px-10">
+            <div className="max-w-2xl">
+              <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">Why parents choose us</h2>
+              <p className="mt-3 text-muted">
+                Our primary assignment is to teach Christian children the Word of God and to empower them to be relevant in
+                every area of life.
+              </p>
+            </div>
+            <ButtonLink href="/programmes/bible-club">Enroll your child</ButtonLink>
           </div>
         </Container>
       </section>
@@ -156,6 +220,54 @@ export default async function Home() {
         </Container>
       </section>
 
+      {/* Gallery preview */}
+      <section className="pt-20">
+        <Container>
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <SectionHeading eyebrow="Gallery" title="Moments from GCCMI" />
+            <ButtonLink href="/gallery" variant="secondary">
+              See the gallery
+            </ButtonLink>
+          </div>
+          <div className="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+            {galleryPhotos.slice(0, 6).map((ph, i) => (
+              <Link key={ph.src} href="/gallery" className="group relative block aspect-square overflow-hidden rounded-2xl border border-line">
+                <Image src={ph.src} alt="GCCMI event photo" fill sizes="(min-width:1024px) 16vw, (min-width:640px) 33vw, 50vw" className="object-cover transition duration-300 group-hover:scale-105" priority={i < 2} />
+              </Link>
+            ))}
+          </div>
+        </Container>
+      </section>
+
+      {/* From the blog */}
+      {!!posts.length && (
+        <section className="pt-20">
+          <Container>
+            <div className="flex flex-wrap items-end justify-between gap-4">
+              <SectionHeading eyebrow="News & blog" title="From our blog" />
+              <ButtonLink href="/blog" variant="secondary">
+                All posts
+              </ButtonLink>
+            </div>
+            <div className="mt-10 grid gap-5 md:grid-cols-3">
+              {posts.map((post) => (
+                <Link key={post.id} href={`/blog/${post.slug}`} className="group flex flex-col overflow-hidden rounded-3xl border border-line bg-surface shadow-card transition hover:-translate-y-1">
+                  {post.cover_url && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={post.cover_url} alt="" className="aspect-video w-full object-cover" loading="lazy" />
+                  )}
+                  <div className="p-5">
+                    <p className="text-xs text-muted">{new Date(post.published_at).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "Europe/London" })}</p>
+                    <h3 className="mt-1 font-bold">{post.title}</h3>
+                    <p className="mt-2 line-clamp-3 text-sm text-muted">{post.excerpt}</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </Container>
+        </section>
+      )}
+
       {/* Featured charity project + impact */}
       <section className="py-20">
         <Container>
@@ -164,7 +276,7 @@ export default async function Home() {
               <SectionHeading eyebrow="Charity impact" title={featuredProject.title} sample />
               <p className="mt-4 max-w-xl text-muted">{featuredProject.body}</p>
               <div className="mt-6 flex flex-wrap gap-3">
-                <ButtonLink href="/donate">
+                <ButtonLink href={site.donateUrl} external>
                   <HandHeart className="size-4" /> Support this project
                 </ButtonLink>
                 <ButtonLink href="/charity-impact" variant="secondary">
@@ -264,9 +376,12 @@ export default async function Home() {
               Be part of what God is doing through GCCMI
             </h2>
             <div className="mt-7 flex flex-wrap justify-center gap-3">
-              <ButtonLink href="/donate">Donate</ButtonLink>
+              <ButtonLink href={site.donateUrl} external>Donate</ButtonLink>
               <ButtonLink href="/volunteer" variant="secondary">
                 Volunteer
+              </ButtonLink>
+              <ButtonLink href="/contact" variant="secondary">
+                Contact us
               </ButtonLink>
               <ButtonLink href={site.mainSite} variant="ghost" external>
                 Visit gccmi.co.uk

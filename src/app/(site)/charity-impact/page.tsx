@@ -1,4 +1,5 @@
 import { ButtonLink, Card, Container, PageHero, SectionHeading } from "@/components/ui";
+import { site } from "@/lib/site";
 import { impactAreas, impactStats, SHOW_SAMPLE_BADGES } from "@/lib/content";
 
 export const metadata = { title: "Charity impact" };
@@ -11,7 +12,7 @@ export default function CharityImpact() {
         body="Community projects, school support, food donations, outreach and volunteering."
       >
         <div className="mt-6 flex gap-3">
-          <ButtonLink href="/donate">Donate</ButtonLink>
+          <ButtonLink href={site.donateUrl} external>Donate</ButtonLink>
           <ButtonLink href="/volunteer" variant="secondary">Volunteer</ButtonLink>
         </div>
       </PageHero>

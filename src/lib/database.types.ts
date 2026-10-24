@@ -192,6 +192,30 @@ export type Database = {
           created_at?: string;
         }
       >;
+      posts: Table<
+        {
+          id: string;
+          slug: string;
+          title: string;
+          excerpt: string;
+          body: string;
+          cover_url: string | null;
+          published: boolean;
+          published_at: string;
+          created_at: string;
+        },
+        {
+          id?: string;
+          slug: string;
+          title: string;
+          excerpt?: string;
+          body?: string;
+          cover_url?: string | null;
+          published?: boolean;
+          published_at?: string;
+          created_at?: string;
+        }
+      >;
       push_subscriptions: Table<
         { id: string; profile_id: string; endpoint: string; p256dh: string; auth: string; created_at: string },
         { id?: string; profile_id: string; endpoint: string; p256dh: string; auth: string; created_at?: string }

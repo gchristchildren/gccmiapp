@@ -56,7 +56,7 @@ export function AuthLink({ variant = "desktop", onNavigate }: { variant?: "deskt
     return (
       <Link
         href={state.href}
-        className="hidden items-center gap-2 rounded-full border border-line bg-brand-soft px-4 py-2 text-sm font-semibold text-brand transition hover:opacity-90 md:inline-flex"
+        className="hidden items-center gap-2 rounded-full border border-line bg-brand-soft px-4 py-2 text-sm font-semibold text-brand transition hover:opacity-90 lg:inline-flex"
       >
         <LayoutDashboard className="size-4" /> Dashboard
       </Link>
@@ -66,7 +66,7 @@ export function AuthLink({ variant = "desktop", onNavigate }: { variant?: "deskt
     <Link
       href="/portal"
       aria-hidden={state.status === "loading"}
-      className={`hidden rounded-full px-3 py-1.5 text-sm font-medium text-muted hover:text-fg md:block ${state.status === "loading" ? "invisible" : ""}`}
+      className={`hidden rounded-full px-3 py-1.5 text-sm font-medium text-muted hover:text-fg lg:block ${state.status === "loading" ? "invisible" : ""}`}
     >
       Sign in
     </Link>

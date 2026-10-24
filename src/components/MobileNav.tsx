@@ -9,7 +9,7 @@ import { AuthLink } from "./AuthLink";
 export function MobileNav() {
   const [open, setOpen] = useState(false);
   return (
-    <div className="md:hidden">
+    <div className="lg:hidden">
       <button
         type="button"
         aria-label={open ? "Close menu" : "Open menu"}

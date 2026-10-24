@@ -263,3 +263,86 @@ export async function deleteFamily(f: FormData) {
   revalidatePath("/admin", "layout");
   redirect("/admin/families?deleted=1");
 }
+
+export async function updateConsentForm(f: FormData) {
+  const { supabase } = await requireAdmin();
+  const url = text(f, "file_url");
+  if (!text(f, "title")) fail("/admin/forms", "A title is required.");
+  if (url && !/^https:\/\//.test(url)) fail("/admin/forms", "The file link must start with https://");
+  const { data, error } = await supabase.from("consent_forms").update({
+    title: text(f, "title"),
+    description: text(f, "description") || null,
+    file_url: url || null,
+    required: f.get("required") === "on",
+  }).eq("id", text(f, "id")).select("id");
+  if (error || !data?.length) fail("/admin/forms", NOT_DONE);
+  revalidatePath("/admin", "layout");
+  revalidatePath("/portal", "layout");
+  redirect("/admin/forms?updated=1");
+}
+
+export async function deleteConsentForm(f: FormData) {
+  const { supabase } = await requireAdmin();
+  // Parents' signatures for this form are deleted with it.
+  const { data, error } = await supabase.from("consent_forms").delete().eq("id", text(f, "id")).select("id");
+  if (error || !data?.length) fail("/admin/forms", NOT_DONE);
+  revalidatePath("/admin", "layout");
+  revalidatePath("/portal", "layout");
+  redirect("/admin/forms?deleted=1");
+}
+
+// ---------------------------------------------------------------- blog posts
+const postSlug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "").slice(0, 70) || "post";
+const coverOk = (u: string) => !u || /^(https:\/\/|\/)/.test(u);
+
+export async function createPost(f: FormData) {
+  const { supabase } = await requireAdmin();
+  const title = text(f, "title");
+  if (!title) fail("/admin/posts", "A title is required.");
+  if (!coverOk(text(f, "cover_url"))) fail("/admin/posts", "The cover image link must start with https://");
+  const date = text(f, "published_at");
+  const { data, error } = await supabase.from("posts").insert({
+    slug: `${postSlug(title)}-${Math.random().toString(36).slice(2, 6)}`,
+    title,
+    excerpt: text(f, "excerpt"),
+    body: String(f.get("body") ?? "").trim(),
+    cover_url: text(f, "cover_url") || null,
+    published: f.get("published") === "on",
+    ...(date ? { published_at: new Date(date + "T12:00:00Z").toISOString() } : {}),
+  }).select("id").single();
+  if (error || !data) fail("/admin/posts", "Could not save the post.");
+  revalidatePath("/blog");
+  revalidatePath("/");
+  redirect(`/admin/posts/${data!.id}?created=1`);
+}
+
+export async function updatePost(f: FormData) {
+  const { supabase } = await requireAdmin();
+  const id = text(f, "id");
+  const page = `/admin/posts/${id}`;
+  if (!text(f, "title")) fail(page, "A title is required.");
+  if (!coverOk(text(f, "cover_url"))) fail(page, "The cover image link must start with https://");
+  const date = text(f, "published_at");
+  const { data, error } = await supabase.from("posts").update({
+    title: text(f, "title"),
+    excerpt: text(f, "excerpt"),
+    body: String(f.get("body") ?? "").trim(),
+    cover_url: text(f, "cover_url") || null,
+    published: f.get("published") === "on",
+    ...(date ? { published_at: new Date(date + "T12:00:00Z").toISOString() } : {}),
+  }).eq("id", id).select("id, slug");
+  if (error || !data?.length) fail(page, NOT_DONE);
+  revalidatePath("/blog");
+  revalidatePath(`/blog/${data![0].slug}`);
+  revalidatePath("/");
+  redirect(`${page}?updated=1`);
+}
+
+export async function deletePost(f: FormData) {
+  const { supabase } = await requireAdmin();
+  const { data, error } = await supabase.from("posts").delete().eq("id", text(f, "id")).select("id");
+  if (error || !data?.length) fail("/admin/posts", NOT_DONE);
+  revalidatePath("/blog");
+  revalidatePath("/");
+  redirect("/admin/posts?deleted=1");
+}
