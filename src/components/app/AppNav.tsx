@@ -34,13 +34,13 @@ export function AppNav({ items, header, footer }: { items: NavItem[]; header: Re
 
   return (
     <>
-      <aside className="sticky top-0 hidden h-dvh w-64 shrink-0 flex-col gap-6 border-r border-line bg-surface-2 p-4 lg:flex">
+      <aside className="sticky top-0 hidden print:!hidden h-dvh w-64 shrink-0 flex-col gap-6 border-r border-line bg-surface-2 p-4 lg:flex">
         {header}
         <div className="flex-1 overflow-y-auto">{links}</div>
         {footer}
       </aside>
 
-      <div className="sticky top-0 z-30 border-b border-line bg-surface/90 backdrop-blur lg:hidden">
+      <div className="print:hidden sticky top-0 z-30 border-b border-line bg-surface/90 backdrop-blur lg:hidden">
         <div className="flex items-center justify-between px-4 py-3">
           {header}
           <button

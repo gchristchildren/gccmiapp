@@ -15,7 +15,7 @@ export async function dashboardStats(db: Db) {
   const sixMonthsAgo = new Date(now - 183 * DAY).toISOString();
   const eightWeeksAgo = now - 56 * DAY;
 
-  const [families, children, sessions, attendance, events, regs, donations, volunteers, forms, sigs] = await Promise.all([
+  const [families, children, sessions, attendance, events, regs, donations, volunteers, forms, sigs, pendingMasterclass] = await Promise.all([
     db.from("profiles").select("*", { count: "exact", head: true }).eq("role", "parent"),
     db.from("children").select("id, first_name, last_name, age_group, created_at"),
     db.from("sessions").select("id, title, age_group, starts_at, memory_verse").gte("starts_at", new Date(eightWeeksAgo).toISOString()).order("starts_at"),
@@ -26,6 +26,7 @@ export async function dashboardStats(db: Db) {
     db.from("volunteers").select("*", { count: "exact", head: true }).eq("status", "new"),
     db.from("consent_forms").select("id").eq("required", true),
     db.from("consent_signatures").select("form_id, child_id"),
+    db.from("masterclass_memberships").select("*", { count: "exact", head: true }).eq("status", "pending"),
   ]);
 
   const kids = children.data ?? [];
@@ -112,6 +113,7 @@ export async function dashboardStats(db: Db) {
     atRisk,
     actions: {
       newVolunteers: volunteers.count ?? 0,
+      pendingMasterclass: pendingMasterclass.count ?? 0,
       missingConsent,
       sessionsWithoutVerse: noVerse,
       quietEvents,

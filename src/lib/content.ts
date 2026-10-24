@@ -1,5 +1,17 @@
+export const volunteerSkills = [
+  "Teaching",
+  "Childcare",
+  "Music",
+  "Media & photography",
+  "Admin",
+  "Cooking & catering",
+  "Driving",
+  "Fundraising",
+  "IT",
+];
+
 /**
- * PLACEHOLDER CONTENT.
+ * PLACEHOLDER CONTENT (events now come from the database).
  * Everything below is sample data so the layout can be reviewed. Replace it with real
  * GCCMI copy, dates, figures and quotes before launch. In Phase 2 this moves into the
  * Supabase-backed admin area. `SHOW_SAMPLE_BADGES` flags sample sections on screen.
@@ -22,6 +34,7 @@ export const eventCategories: EventCategory[] = [
 ];
 
 export type GccEvent = {
+  id: string;
   slug: string;
   title: string;
   category: EventCategory;
@@ -32,69 +45,6 @@ export type GccEvent = {
   summary: string;
   registerUrl?: string;
 };
-
-export const events: GccEvent[] = [
-  {
-    slug: "bible-club-autumn-term",
-    title: "Bible Club: Autumn Term Starts",
-    category: "Bible Club",
-    date: "2026-11-07",
-    time: "10:00 – 12:00",
-    venue: "Community Hall (venue to be confirmed)",
-    address: "London, UK",
-    summary: "Weekly sessions for children with stories, memory verses and activities.",
-  },
-  {
-    slug: "academy-winter",
-    title: "GCCMI Academy: Winter Edition",
-    category: "Academy",
-    date: "2026-12-12",
-    time: "09:30 – 16:00",
-    venue: "Venue to be confirmed",
-    address: "London, UK",
-    summary: "Our bi-annual academy day for parents and students.",
-  },
-  {
-    slug: "food-drive",
-    title: "Community Food Drive",
-    category: "Charity Outreach",
-    date: "2026-12-19",
-    time: "11:00 – 15:00",
-    venue: "Venue to be confirmed",
-    address: "London, UK",
-    summary: "Collecting and distributing food parcels to local families.",
-  },
-  {
-    slug: "masterclass-kickoff",
-    title: "Masterclass Annual Kick-off",
-    category: "Masterclass",
-    date: "2027-01-16",
-    time: "18:00 – 20:00",
-    venue: "Online",
-    address: "Online",
-    summary: "Launch of the annual Masterclass with schedule and course overview.",
-  },
-  {
-    slug: "academy-summer-past",
-    title: "GCCMI Academy: Summer Edition",
-    category: "Academy",
-    date: "2026-06-20",
-    time: "09:30 – 16:00",
-    venue: "Venue to be confirmed",
-    address: "London, UK",
-    summary: "Our summer academy day. Photos and testimonials to follow.",
-  },
-  {
-    slug: "school-supplies-past",
-    title: "School Supplies Giveaway",
-    category: "Charity Outreach",
-    date: "2026-09-05",
-    time: "10:00 – 14:00",
-    venue: "Venue to be confirmed",
-    address: "London, UK",
-    summary: "Back-to-school packs for children in the community.",
-  },
-];
 
 export const impactStats = [
   { value: "000+", label: "Children reached" },
@@ -186,14 +136,13 @@ export const featuredProject = {
   body: "Replace this with the current community project: what it is, who it helps and how people can get involved.",
 };
 
-export function upcomingEvents(now = new Date()) {
+/** Splits events into upcoming (soonest first) and past (latest first), by calendar date. */
+export function splitEvents(list: GccEvent[], now = new Date()) {
   const today = now.toISOString().slice(0, 10);
-  return events.filter((e) => e.date >= today).sort((a, b) => a.date.localeCompare(b.date));
-}
-
-export function pastEvents(now = new Date()) {
-  const today = now.toISOString().slice(0, 10);
-  return events.filter((e) => e.date < today).sort((a, b) => b.date.localeCompare(a.date));
+  return {
+    upcoming: list.filter((e) => e.date >= today).sort((a, b) => a.date.localeCompare(b.date)),
+    past: list.filter((e) => e.date < today).sort((a, b) => b.date.localeCompare(a.date)),
+  };
 }
 
 export function formatDate(iso: string) {

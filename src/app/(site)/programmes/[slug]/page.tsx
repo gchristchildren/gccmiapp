@@ -2,6 +2,9 @@ import { Check } from "lucide-react";
 import { notFound } from "next/navigation";
 import { ButtonLink, Card, Container, PageHero } from "@/components/ui";
 import { programmes } from "@/lib/content";
+import { createPublicClient } from "@/lib/supabase/public";
+
+export const revalidate = 300;
 
 export function generateStaticParams() {
   return programmes.map((p) => ({ slug: p.slug }));
@@ -17,6 +20,11 @@ export default async function Programme({ params }: { params: Promise<{ slug: st
   const { slug } = await params;
   const p = programmes.find((x) => x.slug === slug);
   if (!p) notFound();
+
+  // Masterclass shows its published courses and schedules (lessons themselves are members-only).
+  const { data: courses } = p.slug === "masterclass"
+    ? await createPublicClient().from("courses").select("id, title, description, schedule_note").eq("published", true).order("created_at")
+    : { data: null };
 
   return (
     <>
@@ -48,12 +56,26 @@ export default async function Programme({ params }: { params: Promise<{ slug: st
             Online registration opens with the parent portal. Until then, see upcoming events for dates.
           </p>
           <div className="mt-5 flex flex-wrap gap-3">
-            <ButtonLink href="/portal">Parent portal</ButtonLink>
+            <ButtonLink href={p.slug === "masterclass" ? "/portal/masterclass" : "/portal"}>{p.slug === "masterclass" ? "Register in the portal" : "Parent portal"}</ButtonLink>
             <ButtonLink href="/events" variant="secondary">
               Upcoming events
             </ButtonLink>
           </div>
         </Card>
+        {!!courses?.length && (
+          <div className="space-y-4 md:col-span-2">
+            <h2 className="text-xl font-bold">Courses</h2>
+            <div className="grid gap-4 md:grid-cols-2">
+              {courses.map((c) => (
+                <Card key={c.id}>
+                  <h3 className="font-bold">{c.title}</h3>
+                  {c.schedule_note && <p className="text-xs font-medium text-brand">{c.schedule_note}</p>}
+                  <p className="mt-2 text-sm text-muted">{c.description}</p>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
       </Container>
     </>
   );

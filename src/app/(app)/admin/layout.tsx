@@ -1,4 +1,4 @@
-import { Bell, CalendarDays, FileText, HandHeart, Heart, LayoutDashboard, Users, UserRound, BookOpen } from "lucide-react";
+import { Bell, BellRing, BookOpen, CalendarDays, FileText, GraduationCap, HandHeart, Heart, LayoutDashboard, ListChecks, UserRound, Users } from "lucide-react";
 import { AppShell } from "@/components/app/AppShell";
 import { requireAdmin } from "@/lib/auth";
 
@@ -10,8 +10,11 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     { href: "/admin/sessions", label: "Bible Club sessions", icon: <BookOpen /> },
     { href: "/admin/events", label: "Events", icon: <CalendarDays /> },
     { href: "/admin/announcements", label: "Announcements", icon: <Bell /> },
+    { href: "/admin/notifications", label: "Push notifications", icon: <BellRing /> },
+    { href: "/admin/masterclass", label: "Masterclass", icon: <GraduationCap /> },
     { href: "/admin/forms", label: "Consent forms", icon: <FileText /> },
     { href: "/admin/volunteers", label: "Volunteers", icon: <HandHeart /> },
+    { href: "/admin/opportunities", label: "Opportunities", icon: <ListChecks /> },
     { href: "/admin/donations", label: "Donations", icon: <Heart /> },
     { href: "/portal", label: "Parent view", icon: <UserRound /> },
   ];

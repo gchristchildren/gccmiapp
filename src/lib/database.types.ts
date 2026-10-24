@@ -15,8 +15,8 @@ export type Database = {
   public: {
     Tables: {
       profiles: Table<
-        { id: string; full_name: string; phone: string | null; role: AppRole; created_at: string },
-        { id: string; full_name?: string; phone?: string | null; role?: AppRole; created_at?: string }
+        { id: string; full_name: string; phone: string | null; role: AppRole; skills: string[]; created_at: string },
+        { id: string; full_name?: string; phone?: string | null; role?: AppRole; skills?: string[]; created_at?: string }
       >;
       children: Table<
         {
@@ -191,6 +191,117 @@ export type Database = {
           donor_email?: string | null;
           created_at?: string;
         }
+      >;
+      push_subscriptions: Table<
+        { id: string; profile_id: string; endpoint: string; p256dh: string; auth: string; created_at: string },
+        { id?: string; profile_id: string; endpoint: string; p256dh: string; auth: string; created_at?: string }
+      >;
+      notifications: Table<
+        {
+          id: string;
+          title: string;
+          body: string;
+          url: string | null;
+          kind: "announcement" | "reminder" | "event" | "opportunity" | "manual";
+          sent_count: number;
+          created_by: string | null;
+          created_at: string;
+        },
+        {
+          id?: string;
+          title: string;
+          body: string;
+          url?: string | null;
+          kind: "announcement" | "reminder" | "event" | "opportunity" | "manual";
+          sent_count?: number;
+          created_by?: string | null;
+          created_at?: string;
+        }
+      >;
+      reminder_log: Table<{ key: string; sent_at: string }, { key: string; sent_at?: string }>;
+      volunteer_opportunities: Table<
+        {
+          id: string;
+          title: string;
+          description: string;
+          skills: string[];
+          event_id: string | null;
+          starts_on: string | null;
+          published: boolean;
+          created_at: string;
+        },
+        {
+          id?: string;
+          title: string;
+          description?: string;
+          skills?: string[];
+          event_id?: string | null;
+          starts_on?: string | null;
+          published?: boolean;
+          created_at?: string;
+        }
+      >;
+      opportunity_signups: Table<
+        { opportunity_id: string; profile_id: string; created_at: string },
+        { opportunity_id: string; profile_id: string; created_at?: string }
+      >;
+      courses: Table<
+        {
+          id: string;
+          slug: string;
+          title: string;
+          description: string;
+          schedule_note: string;
+          starts_on: string | null;
+          published: boolean;
+          created_at: string;
+        },
+        {
+          id?: string;
+          slug: string;
+          title: string;
+          description?: string;
+          schedule_note?: string;
+          starts_on?: string | null;
+          published?: boolean;
+          created_at?: string;
+        }
+      >;
+      lessons: Table<
+        {
+          id: string;
+          course_id: string;
+          position: number;
+          title: string;
+          description: string;
+          video_url: string | null;
+          created_at: string;
+        },
+        {
+          id?: string;
+          course_id: string;
+          position?: number;
+          title: string;
+          description?: string;
+          video_url?: string | null;
+          created_at?: string;
+        }
+      >;
+      course_resources: Table<
+        { id: string; course_id: string; title: string; file_url: string; created_at: string },
+        { id?: string; course_id: string; title: string; file_url: string; created_at?: string }
+      >;
+      masterclass_memberships: Table<
+        { id: string; profile_id: string; year: number; status: "pending" | "active" | "cancelled"; created_at: string },
+        { id?: string; profile_id: string; year: number; status?: "pending" | "active" | "cancelled"; created_at?: string }
+      >;
+      lesson_progress: Table<
+        { profile_id: string; lesson_id: string; completed_at: string },
+        { profile_id: string; lesson_id: string; completed_at?: string }
+      >;
+      certificates: Table<
+        { id: string; certificate_no: string; profile_id: string; course_id: string; holder_name: string; issued_at: string },
+        { id?: string; certificate_no?: string; profile_id: string; course_id: string; holder_name: string; issued_at?: string }
       >;
     };
     Views: { [_ in never]: never };

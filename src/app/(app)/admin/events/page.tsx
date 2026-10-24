@@ -34,9 +34,10 @@ export default async function AdminEvents({ searchParams }: { searchParams: Prom
           <label className="text-sm font-medium sm:col-span-2">Address (used for the map link)<input name="address" className={input} /></label>
           <label className="text-sm font-medium sm:col-span-2">Summary<textarea name="summary" rows={2} className={input} /></label>
           <label className="text-sm font-medium sm:col-span-2">Registration link (optional, https://)<input name="register_url" type="url" className={input} /></label>
+          <label className="flex items-center gap-3 text-sm sm:col-span-2"><input type="checkbox" name="send_push" className="size-4 accent-[var(--brand)]" /> Notify people with reminders on (&ldquo;New event added&rdquo;)</label>
           <button className="rounded-full bg-brand px-6 py-3 text-sm font-semibold text-brand-fg hover:opacity-90 sm:w-fit">Add event</button>
         </form>
-        <p className="mt-3 text-xs text-muted">The public Events page switches over to these events in the next update.</p>
+        <p className="mt-3 text-xs text-muted">Events appear on the public Events page straight away.</p>
       </Card>
       {(data ?? []).map((e) => (
         <Card key={e.id} className="flex items-start justify-between gap-3 p-5 text-sm">

@@ -1,5 +1,5 @@
 // Minimal service worker: network-first for pages, offline fallback, cache-first for static assets.
-const CACHE = "gccmi-v1";
+const CACHE = "gccmi-v2";
 const OFFLINE = "/offline";
 
 self.addEventListener("install", (e) => {
@@ -36,4 +36,33 @@ self.addEventListener("fetch", (e) => {
       ),
     );
   }
+});
+
+// ---- Web push -------------------------------------------------------------
+self.addEventListener("push", (event) => {
+  let data = {};
+  try {
+    data = event.data ? event.data.json() : {};
+  } catch {
+    data = { title: "GCCMI", body: event.data ? event.data.text() : "" };
+  }
+  event.waitUntil(
+    self.registration.showNotification(data.title || "GCCMI", {
+      body: data.body || "",
+      icon: "/icon-192.png",
+      badge: "/favicon.png",
+      data: { url: data.url || "/portal" },
+    }),
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const url = new URL(event.notification.data?.url || "/portal", self.location.origin).href;
+  event.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((wins) => {
+      const open = wins.find((w) => new URL(w.url).origin === self.location.origin);
+      return open ? open.navigate(url).then((w) => w && w.focus()) : self.clients.openWindow(url);
+    }),
+  );
 });

@@ -30,9 +30,10 @@ export default async function AdminAnnouncements({ searchParams }: { searchParam
               <option value="masterclass">Masterclass</option>
             </select>
           </label>
+          <label className="flex items-center gap-3 text-sm"><input type="checkbox" name="send_push" defaultChecked className="size-4 accent-[var(--brand)]" /> Also send as a push notification</label>
           <button className="rounded-full bg-brand px-6 py-3 text-sm font-semibold text-brand-fg hover:opacity-90">Post</button>
         </form>
-        <p className="mt-3 text-xs text-muted">Announcements show in the parent portal. Push notifications arrive in Phase 3.</p>
+        <p className="mt-3 text-xs text-muted">Announcements always show in the parent portal. Push goes to people who turned reminders on.</p>
       </Card>
       {(data ?? []).map((n) => (
         <Card key={n.id} className="flex items-start justify-between gap-3 p-5 text-sm">

@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { volunteerSkills as skills } from "@/lib/content";
 
-const skills = ["Teaching", "Childcare", "Music", "Media & photography", "Admin", "Cooking & catering", "Driving", "Fundraising", "IT"];
 
 export function VolunteerForm() {
   const [selected, setSelected] = useState<string[]>([]);

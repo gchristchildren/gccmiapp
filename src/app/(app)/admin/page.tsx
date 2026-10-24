@@ -1,4 +1,4 @@
-import { AlertTriangle, ArrowRight, FileWarning, HandHeart, CalendarX, BookOpen } from "lucide-react";
+import { AlertTriangle, ArrowRight, BookOpen, CalendarX, FileWarning, GraduationCap, HandHeart } from "lucide-react";
 import Link from "next/link";
 import { BarChart } from "@/components/app/Charts";
 import { Card } from "@/components/ui";
@@ -35,6 +35,7 @@ export default async function AdminDashboard() {
 
   const actions = [
     { n: s.actions.newVolunteers, title: "New volunteer sign-ups", body: "People are waiting to hear from you.", href: "/admin/volunteers", cta: "Review volunteers", icon: HandHeart, tone: "attention" },
+    { n: s.actions.pendingMasterclass, title: "Masterclass registrations to approve", body: "Members get lessons once you approve them.", href: "/admin/masterclass", cta: "Review registrations", icon: GraduationCap, tone: "attention" },
     { n: s.actions.missingConsent, title: "Children missing consent forms", body: "Required forms not yet signed by a parent.", href: "/admin/families", cta: "See families", icon: FileWarning, tone: "critical" },
     { n: s.actions.sessionsWithoutVerse, title: "Sessions this week without a memory verse", body: "Parents see the verse after each session.", href: "/admin/sessions", cta: "Add verses", icon: BookOpen, tone: "attention" },
     { n: s.actions.quietEvents, title: "Events within 2 weeks with no sign-ups", body: "Consider an announcement to promote them.", href: "/admin/announcements", cta: "Post announcement", icon: CalendarX, tone: "attention" },

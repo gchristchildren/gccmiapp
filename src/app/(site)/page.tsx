@@ -10,12 +10,13 @@ import {
   impactStats,
   programmes,
   testimonials,
-  upcomingEvents,
+  splitEvents,
   books,
 } from "@/lib/content";
+import { fetchPublicEvents } from "@/lib/events";
 import { site } from "@/lib/site";
 
-export const revalidate = 3600;
+export const revalidate = 300;
 
 const quickLinks = [
   { href: "/programmes/bible-club", label: "Register for Bible Club", icon: BookOpen },
@@ -27,8 +28,9 @@ const quickLinks = [
 
 const programmeIcons = [BookOpen, GraduationCap, Library];
 
-export default function Home() {
-  const next = upcomingEvents()[0];
+export default async function Home() {
+  const { upcoming } = splitEvents(await fetchPublicEvents());
+  const next = upcoming[0];
 
   return (
     <>
@@ -139,17 +141,16 @@ export default function Home() {
       <section className="py-4">
         <Container>
           <div className="flex flex-wrap items-end justify-between gap-4">
-            <SectionHeading eyebrow="Events" title="Upcoming events" sample />
+            <SectionHeading eyebrow="Events" title="Upcoming events" />
             <ButtonLink href="/events" variant="secondary">
               All events
             </ButtonLink>
           </div>
           <div className="mt-10 grid gap-5 md:grid-cols-3">
-            {upcomingEvents()
-              .slice(0, 3)
-              .map((e) => (
-                <EventCard key={e.slug} event={e} />
-              ))}
+            {upcoming.slice(0, 3).map((e) => (
+              <EventCard key={e.slug} event={e} compact />
+            ))}
+            {!upcoming.length && <p className="text-muted md:col-span-3">New events will be announced here soon.</p>}
           </div>
         </Container>
       </section>

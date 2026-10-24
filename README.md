@@ -18,12 +18,23 @@ npm run dev
 
 **Phase 2 (accounts and admin):** Supabase auth, parent portal, admin dashboard.
 
+**Phase 3 (engagement):**
+
+- **Events from the database:** admins add events in `/admin/events`; the public Events page and home page read them. Signed-in users can register for events.
+- **Push notifications:** parents turn reminders on in the portal (`PushToggle`); admins send from `/admin/notifications`, and can tick "also send as push" on announcements and events. `/api/cron/reminders` (daily, see `vercel.json`) sends "Bible Club starts tomorrow" and event reminders.
+- **Masterclass:** annual registration, admin approval, members-only lessons (YouTube/Vimeo embeds), downloads, progress, and printable certificates. Course titles are public; lessons and downloads are enforced by row-level security.
+- **Volunteering:** volunteers save skills, admins post opportunities, matching volunteers are suggested and notified, and people sign up in one tap.
+
 - `/login`: email and password sign-up and sign-in
-- `/portal`: register children, schedule and lessons, announcements, consent forms
-- `/admin`: dashboard (attendance, registrations, donations, turnout, at-risk children, "needing action"), families, sessions and attendance, events, announcements, consent forms, volunteers, donations
+- `/portal`: children, schedule and lessons, announcements, consent forms, Masterclass, volunteering
+- `/admin`: dashboard, families, sessions and attendance, events, announcements, push notifications, Masterclass, consent forms, volunteers, opportunities, donations
 - `/api/stripe/webhook` records donations (needs `STRIPE_WEBHOOK_SECRET` and `SUPABASE_SERVICE_ROLE_KEY`)
 
-Database: `supabase/migrations/` (schema, row level security, grants). Parents can only read and write their own children; admin rows are protected by RLS, not just hidden in the UI.
+Database: `supabase/migrations/` (schema, row level security, grants). Parents can only read and write their own data; admin and members-only rows are protected by RLS, not just hidden in the UI.
+
+### Environment variables
+
+See `.env.example`. Generate your own push keys with `npx web-push generate-vapid-keys`, and a random `CRON_SECRET`. `SUPABASE_SERVICE_ROLE_KEY` is needed by the reminder cron and the Stripe webhook only.
 
 ### Make the first admin
 
@@ -40,6 +51,6 @@ The sign-in flow needs the server to reach Supabase. In restricted sandboxes set
 
 ## Placeholders to replace
 
-Public-site copy, events, figures, books and testimonials live in `src/lib/content.ts` and are marked as sample content on screen (`SHOW_SAMPLE_BADGES`). The public Events page still reads this file; it moves to the `events` table next. Set the charity number in `src/lib/site.ts`.
+Public-site copy, figures, books and testimonials live in `src/lib/content.ts` and are marked as sample content on screen (`SHOW_SAMPLE_BADGES`). Set the charity number in `src/lib/site.ts`.
 
 `scripts/make-logo.py` regenerates the transparent logo and PWA icons from the original PNG.

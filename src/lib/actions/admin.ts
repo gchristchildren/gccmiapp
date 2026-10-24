@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
 import { ageGroups, ukLocalToIso } from "@/lib/format";
+import { notify, type Audience } from "@/lib/push";
 
 const text = (f: FormData, k: string) => String(f.get(k) ?? "").trim();
 const fail = (path: string, msg: string): never => redirect(`${path}?error=${encodeURIComponent(msg)}`);
@@ -54,13 +55,19 @@ export async function createAnnouncement(f: FormData) {
   const { supabase, user } = await requireAdmin();
   const audience = text(f, "audience");
   if (!text(f, "title") || !text(f, "body")) fail("/admin/announcements", "Title and message are required.");
+  const aud = ["all", "bible_club", "academy", "masterclass"].includes(audience) ? audience : "all";
   const { error } = await supabase.from("announcements").insert({
     title: text(f, "title"),
     body: text(f, "body"),
-    audience: ["all", "bible_club", "academy", "masterclass"].includes(audience) ? audience : "all",
+    audience: aud,
     created_by: user.id,
   });
   if (error) fail("/admin/announcements", "Could not post the announcement.");
+  if (f.get("send_push") === "on") {
+    // Academy has no enrolment data yet, so it goes to everyone who has reminders on.
+    const target: Audience = aud === "bible_club" ? { kind: "bible_club" } : aud === "masterclass" ? { kind: "masterclass" } : { kind: "all" };
+    await notify(supabase, target, { kind: "announcement", title: text(f, "title"), body: text(f, "body").slice(0, 140), url: "/portal/announcements" }, user.id);
+  }
   revalidatePath("/admin", "layout");
   revalidatePath("/portal", "layout");
   redirect("/admin/announcements");
@@ -76,7 +83,7 @@ export async function deleteAnnouncement(f: FormData) {
 const slugify = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "").slice(0, 60);
 
 export async function createEvent(f: FormData) {
-  const { supabase } = await requireAdmin();
+  const { supabase, user } = await requireAdmin();
   const title = text(f, "title");
   if (!title || !text(f, "starts_on")) fail("/admin/events", "Title and date are required.");
   const { error } = await supabase.from("events").insert({
@@ -91,7 +98,12 @@ export async function createEvent(f: FormData) {
     register_url: text(f, "register_url") || null,
   });
   if (error) fail("/admin/events", "Could not save the event (check the category and that it isn't a duplicate).");
+  if (f.get("send_push") === "on") {
+    await notify(supabase, { kind: "all" }, { kind: "event", title: "New event added", body: title, url: "/events" }, user.id);
+  }
   revalidatePath("/admin", "layout");
+  revalidatePath("/events");
+  revalidatePath("/");
   redirect("/admin/events");
 }
 
@@ -99,6 +111,8 @@ export async function deleteEvent(f: FormData) {
   const { supabase } = await requireAdmin();
   await supabase.from("events").delete().eq("id", text(f, "id"));
   revalidatePath("/admin", "layout");
+  revalidatePath("/events");
+  revalidatePath("/");
 }
 
 export async function createConsentForm(f: FormData) {
@@ -122,4 +136,18 @@ export async function setVolunteerStatus(f: FormData) {
   if (!["new", "contacted", "active", "inactive"].includes(status)) return;
   await supabase.from("volunteers").update({ status }).eq("id", text(f, "id"));
   revalidatePath("/admin", "layout");
+}
+
+export async function sendManualNotification(f: FormData) {
+  const { supabase, user } = await requireAdmin();
+  const title = text(f, "title");
+  const body = text(f, "body");
+  if (!title || !body) fail("/admin/notifications", "A title and message are required.");
+  const url = text(f, "url");
+  const audience = text(f, "audience");
+  const target: Audience = audience === "bible_club" ? { kind: "bible_club" } : audience === "masterclass" ? { kind: "masterclass" } : { kind: "all" };
+  const r = await notify(supabase, target, { kind: "manual", title, body, url: url.startsWith("/") ? url : "/portal" }, user.id);
+  revalidatePath("/admin/notifications");
+  if (r.skipped) fail("/admin/notifications", "Push isn't configured yet (missing VAPID keys).");
+  redirect(`/admin/notifications?sent=${r.sent}`);
 }

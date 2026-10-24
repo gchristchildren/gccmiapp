@@ -1,5 +1,6 @@
 import { BookOpen, FileWarning, Plus } from "lucide-react";
 import Link from "next/link";
+import { PushToggle } from "@/components/PushToggle";
 import { Card } from "@/components/ui";
 import { requireUser } from "@/lib/auth";
 import { fmtDate, fmtDateTime } from "@/lib/format";
@@ -54,6 +55,8 @@ export default async function PortalHome() {
           <span><strong>{missing.length}</strong> consent {missing.length === 1 ? "form needs" : "forms need"} your attention.</span>
         </Link>
       )}
+
+      <Card><PushToggle publicKey={process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? null} /></Card>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
