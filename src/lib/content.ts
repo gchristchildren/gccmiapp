@@ -218,9 +218,9 @@ export const programmes = [
 ];
 
 export const testimonials = [
-  { quote: "Sample testimonial from a Bible Club parent.", name: "Parent", role: "Bible Club" },
-  { quote: "Sample testimonial from an Academy student.", name: "Student", role: "Academy" },
-  { quote: "Sample testimonial from a volunteer.", name: "Volunteer", role: "Outreach" },
+  { quote: "The Bible sessions are quite helpful and my children stay grounded in faith. I’m grateful for a community like this.", name: "Mrs Simisola", role: "Parent, Kent" },
+  { quote: "I love to learn the word of God and the sessions excite me because I have made new friends and I look forward to seeing them.", name: "Jaden", role: "Bible Club, London" },
+  { quote: "Every Christian family needs this. It’s a community and an opportunity to learn about our Lord Jesus Christ.", name: "Sarah", role: "Parent, Birmingham" },
 ];
 
 export const faqs = [

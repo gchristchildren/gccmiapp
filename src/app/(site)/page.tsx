@@ -344,7 +344,6 @@ export default async function Home() {
             eyebrow="Testimonials"
             title="What families are saying"
             body="Trusted by parents, students and volunteers."
-            sample
           />
           <div className="mt-10 grid gap-5 md:grid-cols-3">
             {testimonials.map((t) => (
