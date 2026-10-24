@@ -3,6 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { PasswordInput } from "./PasswordInput";
 
 export function LoginForm() {
   const params = useSearchParams();
@@ -70,9 +71,8 @@ export function LoginForm() {
       </label>
       <label className="block text-sm font-medium">
         Password
-        <input
+        <PasswordInput
           name="password"
-          type="password"
           required
           minLength={8}
           autoComplete={mode === "signin" ? "current-password" : "new-password"}
