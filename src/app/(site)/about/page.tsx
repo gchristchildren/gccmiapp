@@ -106,7 +106,7 @@ export default function About() {
           <div className="mt-6 flex flex-wrap gap-3">
             <ButtonLink href={site.social.youtube} variant="secondary" external>YouTube</ButtonLink>
             <ButtonLink href={site.social.instagram} variant="secondary" external>Instagram</ButtonLink>
-            <ButtonLink href={site.social.facebook} variant="secondary" external>Facebook group</ButtonLink>
+            <ButtonLink href={site.social.facebook} variant="secondary" external>Facebook page</ButtonLink>
           </div>
         </section>
       </Container>

@@ -29,7 +29,7 @@ export const site = {
     email: "info@gccmi.co.uk",
   },
   social: {
-    facebook: "https://www.facebook.com/groups/343516869463130/",
+    facebook: "https://www.facebook.com/Gccbibleclub/",
     instagram: "https://www.instagram.com/gccmiii/",
     youtube: "https://www.youtube.com/channel/UCTZP4O60jQZOja7ZRU4BMuQ",
   },
