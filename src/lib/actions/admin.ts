@@ -237,7 +237,10 @@ export async function updateChild(f: FormData) {
     date_of_birth: dob,
     age_group: text(f, "age_group"),
     medical_notes: text(f, "medical_notes") || null,
-    photo_consent: f.get("photo_consent") === "on",
+    photo_website: f.get("photo_website") === "on",
+    photo_social: f.get("photo_social") === "on",
+    photo_print: f.get("photo_print") === "on",
+    photo_funding: f.get("photo_funding") === "on",
   }).eq("id", text(f, "id")).select("id");
   if (error || !data?.length) fail("/admin/families", NOT_DONE);
   revalidatePath("/admin", "layout");
@@ -295,33 +298,18 @@ export async function deleteConsentForm(f: FormData) {
 const postSlug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "").slice(0, 70) || "post";
 const coverOk = (u: string) => !u || /^(https:\/\/|\/)/.test(u);
 
-/** Uploads the optional cover image file to the public blog-covers bucket and returns its address. */
-async function uploadCover(supabase: Awaited<ReturnType<typeof requireAdmin>>["supabase"], f: FormData, page: string): Promise<string | null> {
-  const file = f.get("cover_file");
-  if (!(file instanceof File) || file.size === 0) return null;
-  const types: Record<string, string> = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp" };
-  const ext = types[file.type];
-  if (!ext) fail(page, "The cover image must be a JPG, PNG or WebP file.");
-  if (file.size > 5 * 1024 * 1024) fail(page, "The cover image must be under 5 MB.");
-  const path = `${crypto.randomUUID()}.${ext}`;
-  const { error } = await supabase.storage.from("blog-covers").upload(path, file, { contentType: file.type, cacheControl: "31536000" });
-  if (error) fail(page, "Could not upload the cover image. Please try again.");
-  return supabase.storage.from("blog-covers").getPublicUrl(path).data.publicUrl;
-}
-
 export async function createPost(f: FormData) {
   const { supabase } = await requireAdmin();
   const title = text(f, "title");
   if (!title) fail("/admin/posts", "A title is required.");
   if (!coverOk(text(f, "cover_url"))) fail("/admin/posts", "The cover image link must start with https://");
-  const uploaded = await uploadCover(supabase, f, "/admin/posts");
   const date = text(f, "published_at");
   const { data, error } = await supabase.from("posts").insert({
     slug: `${postSlug(title)}-${Math.random().toString(36).slice(2, 6)}`,
     title,
     excerpt: text(f, "excerpt"),
     body: String(f.get("body") ?? "").trim(),
-    cover_url: uploaded ?? (text(f, "cover_url") || null),
+    cover_url: text(f, "cover_url") || null,
     published: f.get("published") === "on",
     ...(date ? { published_at: new Date(date + "T12:00:00Z").toISOString() } : {}),
   }).select("id").single();
@@ -337,13 +325,12 @@ export async function updatePost(f: FormData) {
   const page = `/admin/posts/${id}`;
   if (!text(f, "title")) fail(page, "A title is required.");
   if (!coverOk(text(f, "cover_url"))) fail(page, "The cover image link must start with https://");
-  const uploaded = await uploadCover(supabase, f, page);
   const date = text(f, "published_at");
   const { data, error } = await supabase.from("posts").update({
     title: text(f, "title"),
     excerpt: text(f, "excerpt"),
     body: String(f.get("body") ?? "").trim(),
-    cover_url: uploaded ?? (text(f, "cover_url") || null),
+    cover_url: text(f, "cover_url") || null,
     published: f.get("published") === "on",
     ...(date ? { published_at: new Date(date + "T12:00:00Z").toISOString() } : {}),
   }).eq("id", id).select("id, slug");
@@ -377,4 +364,15 @@ export async function deleteMessage(f: FormData) {
   if (error || !data?.length) fail("/admin/messages", NOT_DONE);
   revalidatePath("/admin", "layout");
   redirect("/admin/messages?deleted=1");
+}
+
+export async function deleteAssignment(f: FormData) {
+  const { supabase } = await requireAdmin();
+  const id = text(f, "id");
+  const { data: row } = await supabase.from("assignments").select("file_path").eq("id", id).maybeSingle();
+  const { data, error } = await supabase.from("assignments").delete().eq("id", id).select("id");
+  if (error || !data?.length) fail("/admin/assignments", NOT_DONE);
+  if (row) await supabase.storage.from("assignments").remove([row.file_path]);
+  revalidatePath("/admin", "layout");
+  redirect("/admin/assignments?deleted=1");
 }

@@ -2,7 +2,7 @@ import { Card } from "@/components/ui";
 import { ConfirmButton } from "@/components/ConfirmButton";
 import { requireAdmin } from "@/lib/auth";
 import { deleteChildAdmin, deleteFamily, updateChild, updateParent } from "@/lib/actions/admin";
-import { ageGroups, ageLabel, fmtDate } from "@/lib/format";
+import { ageGroups, ageLabel, fmtDate, photoUses } from "@/lib/format";
 
 export const metadata = { title: "Families" };
 export const dynamic = "force-dynamic";
@@ -35,7 +35,7 @@ export default async function Families({ searchParams }: { searchParams: Promise
             <div className="flex flex-wrap justify-between gap-2">
               <div>
                 <p className="text-base font-bold">{p.full_name || "(no name)"}</p>
-                <p className="text-xs text-muted">{p.phone ? `${p.phone} · ` : ""}Joined {fmtDate(p.created_at)}</p>
+                <p className="text-xs text-muted">{p.phone ? `${p.phone} · ` : ""}{p.country ? `${p.country} · ` : ""}Joined {fmtDate(p.created_at)}</p>
               </div>
               <form action={deleteFamily}>
                 <input type="hidden" name="id" value={p.id} />
@@ -64,7 +64,7 @@ export default async function Families({ searchParams }: { searchParams: Promise
                 return (
                   <li key={k.id} className="rounded-2xl bg-surface-2 px-4 py-3">
                     <div className="flex flex-wrap items-center justify-between gap-2">
-                      <span><strong>{k.first_name} {k.last_name}</strong> <span className="text-muted">· {k.age_group}</span>{k.medical_notes && <span className="ml-2 text-xs text-gold">Medical note on file</span>}</span>
+                      <span><strong>{k.first_name} {k.last_name}</strong> <span className="text-muted">· {k.age_group}</span>{k.medical_notes && <span className="ml-2 text-xs text-gold">Medical note on file</span>}<span className="ml-2 text-xs text-muted">{k.consent_at ? `Consent ${fmtDate(k.consent_at)}` : "Parent consent not recorded"}</span></span>
                       <span className={missing ? "text-xs font-semibold text-red-600 dark:text-red-400" : "text-xs font-semibold text-brand"}>
                         {missing ? `${missing} form${missing > 1 ? "s" : ""} unsigned` : "Consent complete"}
                       </span>
@@ -80,7 +80,7 @@ export default async function Families({ searchParams }: { searchParams: Promise
                           <select name="age_group" defaultValue={k.age_group} className={input}>{ageGroups.map((g) => <option key={g} value={g}>{ageLabel(g)}</option>)}</select>
                         </label>
                         <label className="font-medium sm:col-span-2">Medical notes<textarea name="medical_notes" rows={2} defaultValue={k.medical_notes ?? ""} className={input} /></label>
-                        <label className="flex items-center gap-3 sm:col-span-2"><input type="checkbox" name="photo_consent" defaultChecked={k.photo_consent} className="size-4 accent-[var(--brand)]" /> Photo consent given</label>
+                        <fieldset className="flex flex-wrap gap-x-5 gap-y-2 sm:col-span-2"><legend className="font-medium">Photo permissions</legend>{photoUses.map((u) => (<label key={u.key} className="flex items-center gap-2"><input type="checkbox" name={u.key} defaultChecked={k[u.key]} className="size-4 accent-[var(--brand)]" /> {u.label}</label>))}</fieldset>
                         <button className="rounded-full bg-brand px-5 py-2 font-semibold text-brand-fg hover:opacity-90 sm:w-fit">Save child</button>
                       </form>
                       <form action={deleteChildAdmin} className="mt-3">

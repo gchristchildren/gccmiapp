@@ -20,8 +20,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ["/books", 0.5, "monthly"],
     ["/contact", 0.7, "yearly"],
     ["/donate", 0.6, "yearly"],
+    ["/safeguarding", 0.5, "yearly"],
+    ["/policies", 0.4, "yearly"],
     ["/privacy", 0.3, "yearly"],
+    ["/cookies", 0.3, "yearly"],
     ["/terms", 0.3, "yearly"],
+    ["/online-classes-rules", 0.3, "yearly"],
+    ["/photo-policy", 0.3, "yearly"],
   ];
   return [
     ...fixed.map(([path, priority, changeFrequency]) => ({ url: abs(path), priority, changeFrequency })),

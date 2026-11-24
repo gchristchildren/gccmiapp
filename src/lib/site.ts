@@ -36,7 +36,7 @@ export const site = {
   store: "https://selar.co/m/GCCMISTORE",
   blog: "https://gccmiblog.wixsite.com/my-site",
   amazonBooks: "https://amzn.to/3MVBNqQ",
-  aboutVideo: "https://www.youtube.com/embed/KS9CAdB8Dlo",
+  aboutVideo: "https://www.youtube-nocookie.com/embed/KS9CAdB8Dlo",
 };
 
 export const nav = [

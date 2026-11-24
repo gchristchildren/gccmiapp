@@ -36,3 +36,14 @@ export function isoToUkLocal(iso: string) {
   const g = (t: string) => parts.find((x) => x.type === t)?.value ?? "";
   return `${g("year")}-${g("month")}-${g("day")}T${g("hour")}:${g("minute")}`;
 }
+
+/** Photo permissions are given separately for each use (Photo, Video and Media Policy). */
+export const photoUses = [
+  { key: "photo_website", label: "Website" },
+  { key: "photo_social", label: "Social media" },
+  { key: "photo_print", label: "Printed materials" },
+  { key: "photo_funding", label: "Funding applications" },
+] as const;
+
+/** Version recorded with each parent consent, so we know which wording they agreed to. */
+export const CONSENT_VERSION = "policy-pack-1.0";

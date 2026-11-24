@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { CoverUpload } from "@/components/CoverUpload";
 import { Card } from "@/components/ui";
 import { ConfirmButton } from "@/components/ConfirmButton";
 import { requireAdmin } from "@/lib/auth";
@@ -30,9 +31,8 @@ export default async function EditPost({ params, searchParams }: { params: Promi
           <label className="text-sm font-medium sm:col-span-2">Title<input name="title" required defaultValue={post.title} className={input} /></label>
           <label className="text-sm font-medium sm:col-span-2">Short summary<textarea name="excerpt" rows={2} defaultValue={post.excerpt} className={input} /></label>
           <label className="text-sm font-medium sm:col-span-2">Post text<textarea name="body" rows={16} defaultValue={post.body} className={input} /></label>
-          <label className="text-sm font-medium sm:col-span-2">Cover image (upload a JPG, PNG or WebP, up to 5 MB)<input name="cover_file" type="file" accept="image/jpeg,image/png,image/webp" className={input} /></label>
-          <label className="text-sm font-medium">Or a cover image link (https://)<input name="cover_url" type="url" defaultValue={post.cover_url ?? ""} className={input} /></label>
-          <label className="text-sm font-medium">Date<input name="published_at" type="date" defaultValue={post.published_at.slice(0, 10)} className={input} /></label>
+          <CoverUpload inputClass={input} defaultValue={post.cover_url ?? ""} />
+                    <label className="text-sm font-medium">Date<input name="published_at" type="date" defaultValue={post.published_at.slice(0, 10)} className={input} /></label>
           <label className="flex items-center gap-3 text-sm sm:col-span-2"><input type="checkbox" name="published" defaultChecked={post.published} className="size-4 accent-[var(--brand)]" /> Published</label>
           <button className="rounded-full bg-brand px-6 py-3 text-sm font-semibold text-brand-fg hover:opacity-90 sm:w-fit">Save changes</button>
         </form>

@@ -2,6 +2,8 @@ import { BookOpen, FileWarning, Plus } from "lucide-react";
 import Link from "next/link";
 import { PushToggle } from "@/components/PushToggle";
 import { Card } from "@/components/ui";
+import { countries } from "@/lib/countries";
+import { updateCountry } from "@/lib/actions/portal";
 import { requireUser } from "@/lib/auth";
 import { ageLabel, fmtDate, fmtDateTime } from "@/lib/format";
 
@@ -32,6 +34,19 @@ export default async function PortalHome() {
 
   return (
     <div className="mx-auto max-w-5xl space-y-6">
+      {!profile?.country && (
+        <Card className="p-5">
+          <h2 className="font-bold">Where do you live?</h2>
+          <p className="mt-1 text-sm text-muted">Tell us your country so we know where our families are. It only takes a moment.</p>
+          <form action={updateCountry} className="mt-3 flex flex-wrap items-center gap-3">
+            <select name="country" required defaultValue="" aria-label="Country you live in" className="min-w-56 rounded-2xl border border-line bg-bg px-4 py-2.5 text-sm">
+              <option value="" disabled>Choose…</option>
+              {countries.map((c) => <option key={c}>{c}</option>)}
+            </select>
+            <button className="rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-brand-fg hover:opacity-90">Save</button>
+          </form>
+        </Card>
+      )}
       <div>
         <h1 className="text-2xl font-bold">Welcome{first ? `, ${first}` : ""}</h1>
         <p className="text-sm text-muted">

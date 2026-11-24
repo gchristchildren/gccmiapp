@@ -44,9 +44,14 @@ export function SiteFooter() {
       </Container>
       <div className="border-t border-line py-5 text-center text-xs text-muted">
         <p>© {new Date().getFullYear()} {site.fullName}. All rights reserved.</p>
-        <p className="mt-2 flex justify-center gap-4">
-          <Link href="/privacy" className="hover:text-fg">Privacy Policy</Link>
+        <p className="mx-auto mt-2 flex max-w-3xl flex-wrap justify-center gap-x-4 gap-y-1 px-4">
+          <Link href="/privacy" className="hover:text-fg">Privacy Notice</Link>
+          <Link href="/cookies" className="hover:text-fg">Cookies</Link>
           <Link href="/terms" className="hover:text-fg">Terms of Use</Link>
+          <Link href="/safeguarding" className="hover:text-fg">Safeguarding</Link>
+          <Link href="/online-classes-rules" className="hover:text-fg">Online Class Rules</Link>
+          <Link href="/photo-policy" className="hover:text-fg">Photo Policy</Link>
+          <Link href="/policies" className="hover:text-fg">All policies</Link>
         </p>
       </div>
     </footer>

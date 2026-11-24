@@ -15,8 +15,8 @@ export type Database = {
   public: {
     Tables: {
       profiles: Table<
-        { id: string; full_name: string; phone: string | null; role: AppRole; skills: string[]; created_at: string },
-        { id: string; full_name?: string; phone?: string | null; role?: AppRole; skills?: string[]; created_at?: string }
+        { id: string; full_name: string; phone: string | null; country: string | null; role: AppRole; skills: string[]; created_at: string },
+        { id: string; full_name?: string; phone?: string | null; country?: string | null; role?: AppRole; skills?: string[]; created_at?: string }
       >;
       children: Table<
         {
@@ -28,6 +28,12 @@ export type Database = {
           age_group: string;
           medical_notes: string | null;
           photo_consent: boolean;
+          photo_website: boolean;
+          photo_social: boolean;
+          photo_print: boolean;
+          photo_funding: boolean;
+          consent_at: string | null;
+          consent_version: string | null;
           created_at: string;
         },
         {
@@ -39,6 +45,12 @@ export type Database = {
           age_group: string;
           medical_notes?: string | null;
           photo_consent?: boolean;
+          photo_website?: boolean;
+          photo_social?: boolean;
+          photo_print?: boolean;
+          photo_funding?: boolean;
+          consent_at?: string | null;
+          consent_version?: string | null;
           created_at?: string;
         }
       >;
@@ -215,6 +227,10 @@ export type Database = {
           published_at?: string;
           created_at?: string;
         }
+      >;
+      assignments: Table<
+        { id: string; child_id: string; profile_id: string; file_path: string; file_name: string; file_size: number; note: string | null; created_at: string },
+        { id?: string; child_id: string; profile_id: string; file_path: string; file_name: string; file_size: number; note?: string | null; created_at?: string }
       >;
       contact_messages: Table<
         { id: string; name: string; email: string; message: string; status: "new" | "replied"; created_at: string },

@@ -4,7 +4,7 @@ import Link from "next/link";
  * Renders post text safely (no HTML injection). Supported: blank-line paragraphs, "## " and "### "
  * headings, "- " bullet lists, **bold**, [links](https://…), and images as ![alt](https://…).
  */
-const inlineRe = /(\*\*[^*]+\*\*|\[[^\]]+\]\((?:https?:\/\/|\/)[^)\s]+\))/g;
+const inlineRe = /(\*\*[^*]+\*\*|\[[^\]]+\]\((?:https?:\/\/|\/|#)[^)\s]+\))/g;
 
 export function Inline({ text }: { text: string }) {
   return (
@@ -12,10 +12,10 @@ export function Inline({ text }: { text: string }) {
       {text.split(inlineRe).map((part, i) => {
         const bold = part.match(/^\*\*([^*]+)\*\*$/);
         if (bold) return <strong key={i}>{bold[1]}</strong>;
-        const link = part.match(/^\[([^\]]+)\]\(((?:https?:\/\/|\/)[^)\s]+)\)$/);
+        const link = part.match(/^\[([^\]]+)\]\(((?:https?:\/\/|\/|#)[^)\s]+)\)$/);
         if (link) {
           const label = /^\*\*[^*]+\*\*$/.test(link[1]) ? <strong>{link[1].slice(2, -2)}</strong> : link[1];
-          return link[2].startsWith("/") ? (
+          return link[2].startsWith("/") || link[2].startsWith("#") ? (
             <Link key={i} href={link[2]} className="font-medium text-brand underline">{label}</Link>
           ) : (
             <a key={i} href={link[2]} target="_blank" rel="noopener noreferrer" className="font-medium text-brand underline">{label}</a>

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
+import { countries } from "@/lib/countries";
 import { createClient } from "@/lib/supabase/client";
 import { PasswordInput } from "./PasswordInput";
 
@@ -39,7 +40,7 @@ export function LoginForm() {
         email,
         password,
         options: {
-          data: { full_name: String(f.get("name")), email_updates: f.get("updates") === "on" },
+          data: { full_name: String(f.get("name")), country: String(f.get("country")), email_updates: f.get("updates") === "on" },
           emailRedirectTo: `${location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
         },
       });
@@ -70,6 +71,15 @@ export function LoginForm() {
         Email
         <input name="email" type="email" required autoComplete="email" className={input} />
       </label>
+      {mode === "signup" && (
+        <label className="block text-sm font-medium">
+          Country you live in
+          <select name="country" required defaultValue="" className={input}>
+            <option value="" disabled>Choose…</option>
+            {countries.map((c) => <option key={c}>{c}</option>)}
+          </select>
+        </label>
+      )}
       <label className="block text-sm font-medium">
         Password
         <PasswordInput
