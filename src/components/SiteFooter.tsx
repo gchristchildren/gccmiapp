@@ -44,7 +44,11 @@ export function SiteFooter() {
         </div>
       </Container>
       <div className="border-t border-line py-5 text-center text-xs text-muted">
-        © {new Date().getFullYear()} {site.fullName}. All rights reserved.
+        <p>© {new Date().getFullYear()} {site.fullName}. All rights reserved.</p>
+        <p className="mt-2 flex justify-center gap-4">
+          <Link href="/privacy" className="hover:text-fg">Privacy Policy</Link>
+          <Link href="/terms" className="hover:text-fg">Terms of Use</Link>
+        </p>
       </div>
     </footer>
   );

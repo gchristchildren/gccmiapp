@@ -251,6 +251,26 @@ export const featuredProject = {
   body: "Replace this with the current community project: what it is, who it helps and how people can get involved.",
 };
 
+const classSlots = [
+  { day: 5, hour: 19, label: "Friday at 7pm" },
+  { day: 6, hour: 12, label: "Saturday at 12pm" },
+];
+
+/** The next regular Bible Club class (Friday 7pm, Saturday 12pm, UK time) and how far away it is. */
+export function nextBibleClub(now = new Date()) {
+  const p = Object.fromEntries(
+    new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/London", weekday: "short", hour: "numeric", hourCycle: "h23" })
+      .formatToParts(now).map((x) => [x.type, x.value]),
+  );
+  const today = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].indexOf(p.weekday);
+  const hour = Number(p.hour);
+  const ahead = classSlots
+    .map((s) => ({ ...s, away: (s.day - today + 7) % 7 + (s.day === today && s.hour <= hour ? 7 : 0) }))
+    .sort((a, b) => a.away - b.away)[0];
+  const when = ahead.away === 0 ? "today" : ahead.away === 1 ? "tomorrow" : ahead.label.split(" ")[0];
+  return { label: ahead.label, text: ahead.away <= 1 ? `Bible Club is ${when === "today" ? "today" : "tomorrow"}, ${ahead.label.split(" ").slice(1).join(" ")} (UK time).` : `Next Bible Club class: ${ahead.label} (UK time).` };
+}
+
 /** Splits events into upcoming (soonest first) and past (latest first), by calendar date. */
 export function splitEvents(list: GccEvent[], now = new Date()) {
   const today = now.toISOString().slice(0, 10);

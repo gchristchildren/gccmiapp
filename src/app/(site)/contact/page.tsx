@@ -1,6 +1,7 @@
 import { JsonLd } from "@/components/JsonLd";
 import { breadcrumbSchema, abs, pageMeta } from "@/lib/seo";
 import { Mail, MapPin, Phone } from "lucide-react";
+import { ContactForm } from "@/components/ContactForm";
 import { ButtonLink, Card, Container, PageHero } from "@/components/ui";
 import { site } from "@/lib/site";
 
@@ -36,6 +37,9 @@ export default function Contact() {
           <h2 className="mt-4 font-bold">Email</h2>
           <p className="mt-2 break-all text-sm"><a href={`mailto:${email}`} className="font-medium text-brand">{email}</a></p>
         </Card>
+      </Container>
+      <Container className="pb-16">
+        <ContactForm />
       </Container>
     </>
   );

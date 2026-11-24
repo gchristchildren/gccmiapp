@@ -55,12 +55,7 @@ export const galleryPhotos: { src: string; w: number; h: number }[] = [
   "w": 960,
   "h": 640
  },
- {
-  "src": "/gallery/12.jpg",
-  "w": 960,
-  "h": 641
- },
- {
+  {
   "src": "/gallery/13.jpg",
   "w": 960,
   "h": 640

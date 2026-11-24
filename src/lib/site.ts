@@ -26,7 +26,7 @@ export const site = {
     address: ["574 Gorgie Road", "Edinburgh", "Scotland EH11 3AL", "UK"],
     phone: "+44 7563 803544",
     phoneHref: "tel:+447563803544",
-    email: "info@gloriouschristianchildren.com",
+    email: "info@gccmi.co.uk",
   },
   social: {
     facebook: "https://www.facebook.com/groups/343516869463130/",

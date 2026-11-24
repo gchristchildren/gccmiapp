@@ -39,7 +39,7 @@ export function LoginForm() {
         email,
         password,
         options: {
-          data: { full_name: String(f.get("name")) },
+          data: { full_name: String(f.get("name")), email_updates: f.get("updates") === "on" },
           emailRedirectTo: `${location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
         },
       });
@@ -80,6 +80,18 @@ export function LoginForm() {
           className={input}
         />
       </label>
+      {mode === "signup" && (
+        <div className="space-y-2 text-sm">
+          <label className="flex items-start gap-2">
+            <input type="checkbox" name="agree" required className="mt-1 size-4 accent-[var(--color-brand)]" />
+            <span>I have read the <Link href="/privacy" target="_blank" className="font-medium text-brand">Privacy Policy</Link> and <Link href="/terms" target="_blank" className="font-medium text-brand">Terms of Use</Link>.</span>
+          </label>
+          <label className="flex items-start gap-2">
+            <input type="checkbox" name="updates" className="mt-1 size-4 accent-[var(--color-brand)]" />
+            <span>Email me class reminders and news (optional). You can unsubscribe at any time.</span>
+          </label>
+        </div>
+      )}
       {mode === "signin" && (
         <div className="-mt-2 text-right">
           <Link href="/forgot-password" className="text-sm font-medium text-brand">Forgot your password?</Link>

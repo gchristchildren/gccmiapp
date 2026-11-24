@@ -14,10 +14,11 @@ function Inline({ text }: { text: string }) {
         if (bold) return <strong key={i}>{bold[1]}</strong>;
         const link = part.match(/^\[([^\]]+)\]\(((?:https?:\/\/|\/)[^)\s]+)\)$/);
         if (link) {
+          const label = /^\*\*[^*]+\*\*$/.test(link[1]) ? <strong>{link[1].slice(2, -2)}</strong> : link[1];
           return link[2].startsWith("/") ? (
-            <Link key={i} href={link[2]} className="font-medium text-brand underline">{link[1]}</Link>
+            <Link key={i} href={link[2]} className="font-medium text-brand underline">{label}</Link>
           ) : (
-            <a key={i} href={link[2]} target="_blank" rel="noopener noreferrer" className="font-medium text-brand underline">{link[1]}</a>
+            <a key={i} href={link[2]} target="_blank" rel="noopener noreferrer" className="font-medium text-brand underline">{label}</a>
           );
         }
         return <span key={i}>{part}</span>;

@@ -216,6 +216,10 @@ export type Database = {
           created_at?: string;
         }
       >;
+      contact_messages: Table<
+        { id: string; name: string; email: string; message: string; status: "new" | "replied"; created_at: string },
+        { id?: string; name: string; email: string; message: string; status?: "new" | "replied"; created_at?: string }
+      >;
       push_subscriptions: Table<
         { id: string; profile_id: string; endpoint: string; p256dh: string; auth: string; created_at: string },
         { id?: string; profile_id: string; endpoint: string; p256dh: string; auth: string; created_at?: string }

@@ -8,8 +8,8 @@ import {
   academySubjectsShort,
   coreValues,
   faqs,
-  featuredProject,
   formatDate,
+  nextBibleClub,
   impactStats,
   programmes,
   testimonials,
@@ -50,6 +50,7 @@ export default async function Home() {
   const [events, posts] = await Promise.all([fetchPublicEvents(), fetchPosts(3)]);
   const { upcoming } = splitEvents(events);
   const next = upcoming[0];
+  const nextClass = nextBibleClub();
 
   return (
     <>
@@ -96,7 +97,7 @@ export default async function Home() {
                 Bible Club reminder
               </div>
               <p className="mt-3 rounded-2xl bg-surface-2 p-3 text-sm text-muted">
-                🔔 Bible Club starts tomorrow. This week&apos;s memory verse is ready.
+                🔔 {nextClass.text}
               </p>
               <div className="mt-3 rounded-full bg-brand px-4 py-2 text-center text-sm font-semibold text-brand-fg">
                 Open parent portal
@@ -286,26 +287,23 @@ export default async function Home() {
       {/* Featured charity project + impact */}
       <section className="py-20">
         <Container>
-          <div className="grid gap-5 lg:grid-cols-[1.2fr_1fr]">
-            <div className="hero-bg rounded-3xl border border-line p-8 sm:p-10">
-              <SectionHeading eyebrow="Charity impact" title={featuredProject.title} sample />
-              <p className="mt-4 max-w-xl text-muted">{featuredProject.body}</p>
-              <div className="mt-6 flex flex-wrap gap-3">
-                <ButtonLink href={site.donateUrl} external>
-                  <HandHeart className="size-4" /> Support this project
-                </ButtonLink>
-                <ButtonLink href="/charity-impact" variant="secondary">
-                  See our impact
-                </ButtonLink>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
+          <div className="hero-bg rounded-3xl border border-line p-8 sm:p-10">
+            <SectionHeading eyebrow="Charity impact" title="Serving children and families since 2016" />
+            <div className="mt-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
               {impactStats.map((s) => (
                 <Card key={s.label} className="flex flex-col justify-center">
                   <p className="text-3xl font-bold text-brand">{s.value}</p>
                   <p className="mt-1 text-sm text-muted">{s.label}</p>
                 </Card>
               ))}
+            </div>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <ButtonLink href={site.donateUrl} external>
+                <HandHeart className="size-4" /> Support our work
+              </ButtonLink>
+              <ButtonLink href="/charity-impact" variant="secondary">
+                See our impact
+              </ButtonLink>
             </div>
           </div>
         </Container>

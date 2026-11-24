@@ -65,7 +65,9 @@ export default async function Programme({ params }: { params: Promise<{ slug: st
           <p className="mt-3 text-sm text-muted">
             {p.slug === "academy"
               ? "Already a student? Sign in to the Learning Hub for previous classes, resources and weekly assignments."
-              : "Register in the parent portal, or see upcoming events for dates."}
+              : p.slug === "masterclass"
+                ? "New here? Create a free account first, then choose Masterclass. Contact us for current fees and membership options."
+                : "Register in the parent portal, or see upcoming events for dates."}
           </p>
           <div className="mt-5 flex flex-wrap gap-3">
             <ButtonLink href={p.slug === "masterclass" ? "/portal/masterclass" : "/portal"}>{p.slug === "masterclass" ? "Register in the portal" : "Parent portal"}</ButtonLink>

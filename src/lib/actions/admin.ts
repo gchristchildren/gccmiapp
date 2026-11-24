@@ -346,3 +346,19 @@ export async function deletePost(f: FormData) {
   revalidatePath("/");
   redirect("/admin/posts?deleted=1");
 }
+
+export async function setMessageStatus(f: FormData) {
+  const { supabase } = await requireAdmin();
+  const status = text(f, "status");
+  if (status !== "new" && status !== "replied") return;
+  await supabase.from("contact_messages").update({ status }).eq("id", text(f, "id"));
+  revalidatePath("/admin", "layout");
+}
+
+export async function deleteMessage(f: FormData) {
+  const { supabase } = await requireAdmin();
+  const { data, error } = await supabase.from("contact_messages").delete().eq("id", text(f, "id")).select("id");
+  if (error || !data?.length) fail("/admin/messages", NOT_DONE);
+  revalidatePath("/admin", "layout");
+  redirect("/admin/messages?deleted=1");
+}

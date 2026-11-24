@@ -2,7 +2,7 @@ import { JsonLd } from "@/components/JsonLd";
 import { breadcrumbSchema, pageMeta } from "@/lib/seo";
 import { ButtonLink, Card, Container, PageHero, SectionHeading } from "@/components/ui";
 import { site } from "@/lib/site";
-import { impactAreas, impactStats, SHOW_SAMPLE_BADGES } from "@/lib/content";
+import { impactAreas, impactStats } from "@/lib/content";
 
 export const metadata = pageMeta({
   title: "Charity Impact and Outreach",
@@ -40,21 +40,11 @@ export default function CharityImpact() {
           <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {impactAreas.map((a) => (
               <Card key={a.title}>
-                <div className="mb-4 aspect-video rounded-2xl bg-brand-soft" />
                 <h3 className="font-bold">{a.title}</h3>
                 <p className="mt-1 text-sm text-muted">{a.body}</p>
               </Card>
             ))}
           </div>
-        </section>
-        <section>
-          <SectionHeading title="Success stories" sample />
-          <Card className="mt-8">
-            <p className="text-muted">
-              {SHOW_SAMPLE_BADGES ? "Sample: " : ""}A real story from a family or community helped by GCCMI, with photos or
-              video, will appear here.
-            </p>
-          </Card>
         </section>
       </Container>
     </>

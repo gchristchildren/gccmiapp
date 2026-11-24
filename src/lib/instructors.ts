@@ -56,7 +56,7 @@ export const instructorGroups: { group: string; items: { src: string; w: number;
     "src": "/instructors/09.jpg",
     "w": 465,
     "h": 700,
-    "label": "GGCBC Admin"
+    "label": "GCCBC Admin"
    },
    {
     "src": "/instructors/10.jpg",
