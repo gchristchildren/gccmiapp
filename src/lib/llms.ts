@@ -1,5 +1,5 @@
 import { coreValues, faqs, programmes } from "@/lib/content";
-import { fetchPosts } from "@/lib/posts";
+import { fetchPostSummaries, fetchPosts } from "@/lib/posts";
 import { abs } from "@/lib/seo";
 import { site } from "@/lib/site";
 
@@ -26,7 +26,7 @@ const pages: [string, string, string][] = [
 ];
 
 export async function llmsTxt() {
-  const posts = await fetchPosts(10);
+  const posts = await fetchPostSummaries(10);
   const body = [
     about,
     "",

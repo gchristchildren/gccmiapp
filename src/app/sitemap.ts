@@ -1,12 +1,12 @@
 import type { MetadataRoute } from "next";
 import { programmes } from "@/lib/content";
-import { fetchPosts } from "@/lib/posts";
+import { fetchPostSummaries } from "@/lib/posts";
 import { abs } from "@/lib/seo";
 
 export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const posts = await fetchPosts();
+  const posts = await fetchPostSummaries();
   const fixed: [string, number, MetadataRoute.Sitemap[number]["changeFrequency"]][] = [
     ["/", 1, "weekly"],
     ...programmes.map((p): [string, number, "monthly"] => [`/programmes/${p.slug}`, 0.9, "monthly"]),

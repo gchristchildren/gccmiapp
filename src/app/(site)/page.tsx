@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { EventCard } from "@/components/EventCard";
-import { ButtonLink, Card, Container, SectionHeading } from "@/components/ui";
+import { ButtonLink, Card, Container, PhotoBackdrop, SectionHeading } from "@/components/ui";
 import {
   academySubjectsShort,
   coreValues,
@@ -17,7 +17,7 @@ import {
 } from "@/lib/content";
 import { fetchPublicEvents } from "@/lib/events";
 import { galleryPhotos } from "@/lib/gallery";
-import { fetchPosts } from "@/lib/posts";
+import { fetchPostSummaries } from "@/lib/posts";
 import { faqSchema, pageMeta } from "@/lib/seo";
 import { site } from "@/lib/site";
 import { JsonLd } from "@/components/JsonLd";
@@ -47,7 +47,7 @@ const quickLinks: { href: string; label: string; icon: typeof BookOpen; external
 const programmeIcons = [BookOpen, GraduationCap, Library];
 
 export default async function Home() {
-  const [events, posts] = await Promise.all([fetchPublicEvents(), fetchPosts(3)]);
+  const [events, posts] = await Promise.all([fetchPublicEvents(), fetchPostSummaries(3)]);
   const { upcoming } = splitEvents(events);
   const next = upcoming[0];
   const nextClass = nextBibleClub();
@@ -56,19 +56,20 @@ export default async function Home() {
     <>
       <JsonLd data={faqSchema(faqs)} />
       {/* Hero */}
-      <section className="hero-bg relative -mt-[68px] overflow-hidden pt-[68px]">
-        <Container className="pb-16 pt-14 text-center sm:pb-24 sm:pt-20">
+      <section className="relative isolate -mt-[68px] overflow-hidden bg-[#0b2415] pt-[68px]">
+        <PhotoBackdrop src="/photos/pic-01.jpg" priority position="center 30%" />
+        <Container className="relative pb-16 pt-14 text-center sm:pb-24 sm:pt-20">
           <p className="mx-auto mb-4 w-fit rounded-full border border-line bg-surface/80 px-4 py-1.5 text-xs font-medium text-muted">
             {site.legalName}
           </p>
-          <h1 className="mx-auto max-w-3xl text-4xl font-bold leading-[1.1] tracking-tight sm:text-6xl">
+          <h1 className="mx-auto max-w-3xl text-4xl font-bold leading-[1.1] tracking-tight text-white sm:text-6xl">
             Welcome to GCC Ministry International
           </h1>
-          <p className="mx-auto mt-5 max-w-2xl text-muted sm:text-lg">
+          <p className="mx-auto mt-5 max-w-2xl text-white/85 sm:text-lg">
             Welcome to {site.legalName}, a citadel of first-class learning, with educative, empowering and inspiring
             programmes and activities for children as well as parents.
           </p>
-          <p className="mx-auto mt-3 max-w-2xl text-muted">
+          <p className="mx-auto mt-3 max-w-2xl text-white/85">
             Both children and parents have been benefitting from our programmes, especially our annual international
             parenting workshop. We foster a love for learning within a safe, purposeful and nurturing online environment.
           </p>
@@ -182,7 +183,10 @@ export default async function Home() {
             {programmes.map((p, i) => {
               const Icon = programmeIcons[i];
               return (
-                <Card key={p.slug} className="flex flex-col">
+                <Card key={p.slug} className="flex flex-col overflow-hidden">
+                  <div className="relative -mx-6 -mt-6 mb-5 aspect-[16/10] overflow-hidden">
+                    <Image src={p.image} alt={`${p.name} at GCCMI`} fill sizes="(min-width:768px) 33vw, 100vw" className="object-cover" />
+                  </div>
                   <span className="grid size-11 place-items-center rounded-2xl bg-brand-soft text-brand">
                     <Icon className="size-5" />
                   </span>
@@ -205,15 +209,16 @@ export default async function Home() {
       {/* Why parents choose us */}
       <section className="pb-4">
         <Container>
-          <div className="hero-bg flex flex-wrap items-center justify-between gap-6 rounded-3xl border border-line px-8 py-10 sm:px-10">
-            <div className="max-w-2xl">
-              <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">Why parents choose us</h2>
-              <p className="mt-3 text-muted">
+          <div className="relative isolate flex flex-wrap items-center justify-between gap-6 overflow-hidden rounded-3xl border border-line bg-[#0b2415] px-8 py-10 sm:px-10">
+            <PhotoBackdrop src="/photos/pic-02.jpg" position="center 35%" />
+            <div className="relative max-w-2xl">
+              <h2 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">Why parents choose us</h2>
+              <p className="mt-3 text-white/85">
                 Our primary assignment is to teach Christian children the Word of God and to empower them to be relevant in
                 every area of life.
               </p>
             </div>
-            <ButtonLink href="/programmes/bible-club">Enroll your child</ButtonLink>
+            <div className="relative"><ButtonLink href="/programmes/bible-club">Enroll your child</ButtonLink></div>
           </div>
         </Container>
       </section>
@@ -287,9 +292,12 @@ export default async function Home() {
       {/* Featured charity project + impact */}
       <section className="py-20">
         <Container>
-          <div className="hero-bg rounded-3xl border border-line p-8 sm:p-10">
-            <SectionHeading eyebrow="Charity impact" title="Serving children and families since 2016" />
-            <div className="mt-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
+          <div className="relative isolate overflow-hidden rounded-3xl border border-line bg-[#0b2415] p-8 sm:p-10">
+            <PhotoBackdrop src="/photos/pic-03.jpg" position="center 30%" />
+            <div className="relative text-white">
+              <SectionHeading eyebrow="Charity impact" title="Serving children and families since 2016" />
+            </div>
+            <div className="relative mt-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
               {impactStats.map((s) => (
                 <Card key={s.label} className="flex flex-col justify-center">
                   <p className="text-3xl font-bold text-brand">{s.value}</p>
@@ -297,7 +305,7 @@ export default async function Home() {
                 </Card>
               ))}
             </div>
-            <div className="mt-8 flex flex-wrap gap-3">
+            <div className="relative mt-8 flex flex-wrap gap-3">
               <ButtonLink href={site.donateUrl} external>
                 <HandHeart className="size-4" /> Support our work
               </ButtonLink>
@@ -383,11 +391,12 @@ export default async function Home() {
       {/* Closing CTA */}
       <section className="py-20">
         <Container>
-          <div className="hero-bg rounded-3xl border border-line px-6 py-14 text-center">
-            <h2 className="mx-auto max-w-xl text-3xl font-bold tracking-tight sm:text-4xl">
+          <div className="relative isolate overflow-hidden rounded-3xl border border-line bg-[#0b2415] px-6 py-14 text-center">
+            <PhotoBackdrop src="/photos/pic-04.jpg" position="center 40%" />
+            <h2 className="relative mx-auto max-w-xl text-3xl font-bold tracking-tight text-white sm:text-4xl">
               Be part of what God is doing through GCCMI
             </h2>
-            <div className="mt-7 flex flex-wrap justify-center gap-3">
+            <div className="relative mt-7 flex flex-wrap justify-center gap-3">
               <ButtonLink href={site.donateUrl} external>Donate</ButtonLink>
               <ButtonLink href="/volunteer" variant="secondary">
                 Volunteer
@@ -395,7 +404,7 @@ export default async function Home() {
               <ButtonLink href="/contact" variant="secondary">
                 Contact us
               </ButtonLink>
-              <ButtonLink href={site.mainSite} variant="ghost" external>
+              <ButtonLink href={site.mainSite} variant="ghost" external className="!text-white">
                 Visit gccmi.co.uk
               </ButtonLink>
             </div>

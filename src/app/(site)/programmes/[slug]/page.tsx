@@ -38,7 +38,7 @@ export default async function Programme({ params }: { params: Promise<{ slug: st
           faqSchema(p.faqs),
         ]}
       />
-      <PageHero title={`GCCMI ${p.name}`} body={p.short}>
+      <PageHero image={p.image} position={p.slug === "masterclass" ? "center 30%" : "center 40%"} title={`GCCMI ${p.name}`} body={p.short}>
         <div className="mt-6 flex flex-wrap gap-2">
           {programmes.map((x) => (
             <ButtonLink key={x.slug} href={`/programmes/${x.slug}`} variant={x.slug === p.slug ? "primary" : "secondary"}>

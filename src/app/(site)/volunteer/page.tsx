@@ -20,6 +20,8 @@ export default async function Volunteer() {
     <>
       <JsonLd data={breadcrumbSchema([{ name: "Volunteer", path: "/volunteer" }])} />
       <PageHero
+        image="/photos/pic-10.jpg"
+        position="center 25%"
         title="Volunteer with GCCMI"
         body="Share your skills, hear about opportunities and sign up to help at events."
       />

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { SHOW_SAMPLE_BADGES } from "@/lib/content";
 
@@ -71,12 +72,23 @@ export function Card({ children, className = "" }: { children: React.ReactNode; 
   );
 }
 
-export function PageHero({ title, body, children }: { title: string; body?: string; children?: React.ReactNode }) {
+/** Photo behind a section, with a dark green layer over it so white text stays readable. Parent must be `relative overflow-hidden`. */
+export function PhotoBackdrop({ src, priority, position = "center" }: { src: string; priority?: boolean; position?: string }) {
   return (
-    <section className="hero-bg border-b border-line">
-      <Container className="py-14 sm:py-20">
-        <h1 className="max-w-3xl text-4xl font-bold tracking-tight sm:text-5xl">{title}</h1>
-        {body && <p className="mt-4 max-w-2xl text-lg text-muted">{body}</p>}
+    <>
+      <Image src={src} alt="" fill priority={priority} sizes="100vw" className="object-cover" style={{ objectPosition: position }} />
+      <div className="absolute inset-0 bg-[#0b2415]/70" aria-hidden="true" />
+    </>
+  );
+}
+
+export function PageHero({ title, body, children, image, position }: { title: string; body?: string; children?: React.ReactNode; image?: string; position?: string }) {
+  return (
+    <section className={`relative overflow-hidden border-b border-line ${image ? "isolate bg-[#0b2415]" : "hero-bg"}`}>
+      {image && <PhotoBackdrop src={image} priority position={position} />}
+      <Container className="relative py-14 sm:py-20">
+        <h1 className={`max-w-3xl text-4xl font-bold tracking-tight sm:text-5xl ${image ? "text-white" : ""}`}>{title}</h1>
+        {body && <p className={`mt-4 max-w-2xl text-lg ${image ? "text-white/85" : "text-muted"}`}>{body}</p>}
         {children}
       </Container>
     </section>

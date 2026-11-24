@@ -2,7 +2,7 @@ import { JsonLd } from "@/components/JsonLd";
 import { breadcrumbSchema, pageMeta } from "@/lib/seo";
 import Link from "next/link";
 import { ButtonLink, Container, PageHero } from "@/components/ui";
-import { fetchPosts } from "@/lib/posts";
+import { fetchPostSummaries } from "@/lib/posts";
 import { site } from "@/lib/site";
 
 export const metadata = pageMeta({
@@ -14,7 +14,7 @@ export const metadata = pageMeta({
 export const dynamic = "force-dynamic";
 
 export default async function Blog() {
-  const posts = await fetchPosts();
+  const posts = await fetchPostSummaries();
   return (
     <>
       <JsonLd data={breadcrumbSchema([{ name: "Blog", path: "/blog" }])} />

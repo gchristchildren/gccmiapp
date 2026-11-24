@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { JsonLd } from "@/components/JsonLd";
 import { breadcrumbSchema, pageMeta } from "@/lib/seo";
 import { ButtonLink, Card, Container, PageHero, SectionHeading } from "@/components/ui";
@@ -15,6 +16,7 @@ export default function CharityImpact() {
     <>
       <JsonLd data={breadcrumbSchema([{ name: "Charity impact", path: "/charity-impact" }])} />
       <PageHero
+        image="/photos/pic-11.jpg"
         title="See the difference your support makes"
         body="Community projects, school support, food donations, outreach and volunteering."
       >
@@ -40,6 +42,9 @@ export default function CharityImpact() {
           <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {impactAreas.map((a) => (
               <Card key={a.title}>
+                <div className="relative mb-4 aspect-video overflow-hidden rounded-2xl bg-brand-soft">
+                  <Image src={a.image} alt={a.alt} fill sizes="(min-width:1024px) 30vw, (min-width:768px) 45vw, 90vw" className="object-cover" />
+                </div>
                 <h3 className="font-bold">{a.title}</h3>
                 <p className="mt-1 text-sm text-muted">{a.body}</p>
               </Card>

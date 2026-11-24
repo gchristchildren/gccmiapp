@@ -22,9 +22,10 @@ export default async function Events({ searchParams }: { searchParams: Promise<{
 
   // Which events has the signed-in visitor registered for? (Signed-out visitors just see "Register".)
   const supabase = await createClient();
-  const { data: auth } = await supabase.auth.getUser();
-  const { data: regs } = auth.user
-    ? await supabase.from("event_registrations").select("event_id").eq("profile_id", auth.user.id)
+  // Read the session from the cookie (no network call). Row-level security means a forged cookie still only sees its own rows.
+  const { data: auth } = await supabase.auth.getSession();
+  const { data: regs } = auth.session
+    ? await supabase.from("event_registrations").select("event_id").eq("profile_id", auth.session.user.id)
     : { data: [] };
   const registered = new Set((regs ?? []).map((r) => r.event_id));
 
@@ -52,7 +53,7 @@ export default async function Events({ searchParams }: { searchParams: Promise<{
           })),
         ]}
       />
-      <PageHero title="Events" body="Bible Club, Academy, Masterclass, charity outreach and community events." />
+      <PageHero image="/photos/pic-09.jpg" position="center 35%" title="Events" body="Bible Club, Academy, Masterclass, charity outreach and community events." />
       <Container className="py-12">
         <nav className="flex flex-wrap gap-2" aria-label="Event categories">
           <Link href="/events" className={chip(!active)}>All</Link>

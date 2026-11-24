@@ -1,4 +1,4 @@
-import { fetchPosts } from "@/lib/posts";
+import { fetchPostSummaries } from "@/lib/posts";
 import { abs } from "@/lib/seo";
 import { site } from "@/lib/site";
 
@@ -7,7 +7,7 @@ export const revalidate = 3600;
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
 export async function GET() {
-  const posts = await fetchPosts(50);
+  const posts = await fetchPostSummaries(50);
   const items = posts
     .map(
       (p) => `    <item>

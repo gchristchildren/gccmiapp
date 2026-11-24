@@ -58,16 +58,17 @@ export const impactStats = [
 ];
 
 export const impactAreas = [
-  { title: "Community projects", body: "Practical projects that meet needs close to home." },
-  { title: "School support", body: "Supplies, mentoring and encouragement for pupils." },
-  { title: "Food donations", body: "Food parcels and meals for families who need them." },
-  { title: "Outreach programmes", body: "Taking hope and help into the wider community." },
-  { title: "Volunteer activities", body: "Opportunities for people to give time and skills." },
+  { title: "Community projects", image: "/photos/pic-12.jpg", alt: "Volunteers planting a tree seedling in the soil", body: "Practical projects that meet needs close to home." },
+  { title: "School support", image: "/photos/pic-13.jpg", alt: "Pupils in a classroom holding up their books", body: "Supplies, mentoring and encouragement for pupils." },
+  { title: "Food donations", image: "/photos/pic-14.jpg", alt: "A box of fresh fruit and vegetables for donation", body: "Food parcels and meals for families who need them." },
+  { title: "Outreach programmes", image: "/photos/pic-15.jpg", alt: "A volunteer sharing gifts with children during outreach", body: "Taking hope and help into the wider community." },
+  { title: "Volunteer activities", image: "/photos/pic-16.jpg", alt: "Volunteers packing food boxes together", body: "Opportunities for people to give time and skills." },
 ];
 
 export const programmes = [
   {
     slug: "bible-club",
+    image: "/photos/pic-06.jpg",
     metaTitle: "Free Online Bible Club for Children",
     metaDescription: "Join GCCMI’s free online Bible Club for Christian children worldwide. Live Zoom classes every Friday and Saturday for Kids, Pre-Teens and Teens.",
     faqs: [
@@ -124,6 +125,7 @@ export const programmes = [
   },
   {
     slug: "academy",
+    image: "/photos/pic-07.jpg",
     metaTitle: "Online Academy for Children: Maths, Coding and More",
     metaDescription: "GCC Academy is a flexible online programme where children learn Maths, English, Coding, Web Design, Music and more in groups on Zoom.",
     faqs: [
@@ -168,6 +170,7 @@ export const programmes = [
   },
   {
     slug: "masterclass",
+    image: "/photos/pic-08.jpg",
     metaTitle: "Masterclass: Online Classes for Adults and Parents",
     metaDescription: "GCCMI Masterclass offers affordable online classes for adults: intentional parenting, mental health, business and creative skills. Join live or watch later.",
     faqs: [

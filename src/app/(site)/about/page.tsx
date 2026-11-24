@@ -16,7 +16,7 @@ export default function About() {
   return (
     <>
       <JsonLd data={[breadcrumbSchema([{ name: "About", path: "/about" }]), { "@context": "https://schema.org", "@type": "AboutPage", name: "About GCC Ministry International", url: abs("/about"), about: { "@id": abs("/#organization") } }]} />
-      <PageHero title={`About ${site.legalName}`} body="Our story, our vision and the values we hold." />
+      <PageHero image="/photos/pic-05.jpg" position="center 35%" title={`About ${site.legalName}`} body="Our story, our vision and the values we hold." />
       <Container className="space-y-20 py-16">
         <section className="grid gap-8 md:grid-cols-2">
           <div>
