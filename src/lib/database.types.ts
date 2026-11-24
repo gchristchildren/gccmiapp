@@ -8,6 +8,9 @@ type Table<Row, Insert, Update = Partial<Insert>> = {
   Relationships: [];
 };
 
+export type RefereeStatus = "not contacted" | "requested" | "received" | "declined";
+export type Referee = { name: string; relationship: string; email: string; phone: string; status: RefereeStatus };
+
 export type AppRole = "parent" | "volunteer" | "admin";
 
 export type Database = {
@@ -169,6 +172,9 @@ export type Database = {
           skills: string[];
           message: string | null;
           status: string;
+          referees: Referee[];
+          vetting_complete: boolean;
+          vetting_notes: string | null;
           created_at: string;
         },
         {
@@ -179,6 +185,9 @@ export type Database = {
           skills?: string[];
           message?: string | null;
           status?: string;
+          referees?: Referee[];
+          vetting_complete?: boolean;
+          vetting_notes?: string | null;
           created_at?: string;
         }
       >;
@@ -227,6 +236,18 @@ export type Database = {
           published_at?: string;
           created_at?: string;
         }
+      >;
+      app_settings: Table<
+        { key: string; value: string; updated_at: string },
+        { key: string; value: string; updated_at?: string }
+      >;
+      session_links: Table<
+        { session_id: string; zoom_url: string; created_at: string },
+        { session_id: string; zoom_url: string; created_at?: string }
+      >;
+      quiz_scores: Table<
+        { id: string; child_id: string; quiz_title: string; score: number; out_of: number; taken_on: string; created_at: string },
+        { id?: string; child_id: string; quiz_title: string; score: number; out_of: number; taken_on?: string; created_at?: string }
       >;
       assignments: Table<
         { id: string; child_id: string; profile_id: string; file_path: string; file_name: string; file_size: number; note: string | null; created_at: string },

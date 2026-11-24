@@ -13,6 +13,7 @@ export default async function SessionDetail({ params, searchParams }: { params: 
   const { supabase } = await requireAdmin();
   const { data: s } = await supabase.from("sessions").select("*").eq("id", id).single();
   if (!s) notFound();
+  const { data: link } = await supabase.from("session_links").select("zoom_url").eq("session_id", id).maybeSingle();
 
   const kidsQuery = supabase.from("children").select("id, first_name, last_name, age_group, medical_notes").order("first_name");
   const [{ data: kids }, { data: att }] = await Promise.all([
@@ -67,6 +68,7 @@ export default async function SessionDetail({ params, searchParams }: { params: 
               </select>
             </label>
             <label className="text-sm font-medium sm:col-span-2">Venue<input name="venue" defaultValue={s.venue} className={input} /></label>
+            <label className="text-sm font-medium sm:col-span-2">Zoom link (shown to matching families from 30 minutes before the start)<input name="zoom_url" type="url" defaultValue={link?.zoom_url ?? ""} placeholder="https://zoom.us/j/..." className={input} /></label>
             <label className="text-sm font-medium sm:col-span-2">Memory verse<input name="memory_verse" defaultValue={s.memory_verse ?? ""} className={input} /></label>
             <label className="text-sm font-medium sm:col-span-2">Lesson summary<textarea name="lesson_summary" rows={3} defaultValue={s.lesson_summary ?? ""} className={input} /></label>
             <label className="flex items-center gap-3 text-sm sm:col-span-2"><input type="checkbox" name="published" defaultChecked={s.published} className="size-4 accent-[var(--brand)]" /> Visible to parents</label>

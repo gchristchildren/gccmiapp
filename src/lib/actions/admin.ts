@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
 import { volunteerSkills } from "@/lib/content";
-import { ageGroups, ukLocalToIso } from "@/lib/format";
+import { ageGroups, isHttpsUrl, refereeStatuses, ukLocalToIso } from "@/lib/format";
 import { notify, type Audience } from "@/lib/push";
 
 const text = (f: FormData, k: string) => String(f.get(k) ?? "").trim();
@@ -17,15 +17,23 @@ export async function createSession(f: FormData) {
   const group = text(f, "age_group");
   if (!text(f, "title") || !text(f, "starts_at")) fail("/admin/sessions", "Title and start time are required.");
   if (group !== "all" && !(ageGroups as readonly string[]).includes(group)) fail("/admin/sessions", "Choose an age group.");
-  const { error } = await supabase.from("sessions").insert({
+  let zoom = text(f, "zoom_url");
+  if (zoom && !isHttpsUrl(zoom)) fail("/admin/sessions", "The Zoom link must start with https://");
+  if (!zoom) {
+    // Blank: use the default class link, if one is saved.
+    const { data: d } = await supabase.from("app_settings").select("value").eq("key", "zoom_default_url").maybeSingle();
+    zoom = d?.value ?? "";
+  }
+  const { data: created, error } = await supabase.from("sessions").insert({
     title: text(f, "title"),
     age_group: group,
     starts_at: ukLocalToIso(text(f, "starts_at")),
     venue: text(f, "venue"),
     memory_verse: text(f, "memory_verse") || null,
     lesson_summary: text(f, "lesson_summary") || null,
-  });
-  if (error) fail("/admin/sessions", "Could not save the session.");
+  }).select("id").single();
+  if (error || !created) fail("/admin/sessions", "Could not save the session.");
+  if (zoom) await supabase.from("session_links").upsert({ session_id: created!.id, zoom_url: zoom });
   revalidatePath("/admin", "layout");
   redirect("/admin/sessions");
 }
@@ -174,6 +182,10 @@ export async function updateSession(f: FormData) {
     published: f.get("published") === "on",
   }).eq("id", id).select("id");
   if (error || !data?.length) fail(page, NOT_DONE);
+  const zoom = text(f, "zoom_url");
+  if (zoom && !isHttpsUrl(zoom)) fail(page, "The Zoom link must start with https://");
+  if (zoom) await supabase.from("session_links").upsert({ session_id: id, zoom_url: zoom });
+  else await supabase.from("session_links").delete().eq("session_id", id);
   revalidatePath("/admin", "layout");
   revalidatePath("/portal", "layout");
   redirect(`${page}?updated=1`);
@@ -375,4 +387,68 @@ export async function deleteAssignment(f: FormData) {
   if (row) await supabase.storage.from("assignments").remove([row.file_path]);
   revalidatePath("/admin", "layout");
   redirect("/admin/assignments?deleted=1");
+}
+
+export async function saveDefaultZoom(f: FormData) {
+  const { supabase } = await requireAdmin();
+  const url = text(f, "zoom_default_url");
+  if (url && !isHttpsUrl(url)) fail("/admin/sessions", "The Zoom link must start with https://");
+  if (url) await supabase.from("app_settings").upsert({ key: "zoom_default_url", value: url, updated_at: new Date().toISOString() });
+  else await supabase.from("app_settings").delete().eq("key", "zoom_default_url");
+  revalidatePath("/admin/sessions");
+  redirect("/admin/sessions?saved=1");
+}
+
+// ---------------------------------------------------------------- quiz scores
+export type QuizState = { error?: string } | null;
+
+/** Returns an error to show on the form, or saves the scores and goes back to the list. */
+export async function recordQuiz(_prev: QuizState, f: FormData): Promise<QuizState> {
+  const { supabase } = await requireAdmin();
+  const title = text(f, "quiz_title");
+  const outOf = Number(text(f, "out_of"));
+  const date = text(f, "taken_on");
+  if (!title) return { error: "Give the quiz a title." };
+  if (!Number.isInteger(outOf) || outOf < 1 || outOf > 1000) return { error: "Enter the total marks (a whole number)." };
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return { error: "Enter the date of the quiz." };
+  const rows: { child_id: string; quiz_title: string; score: number; out_of: number; taken_on: string }[] = [];
+  for (const [key, value] of f.entries()) {
+    if (!key.startsWith("score_") || String(value).trim() === "") continue;
+    const score = Number(value);
+    if (!Number.isInteger(score) || score < 0 || score > outOf) return { error: `Scores must be whole numbers from 0 to ${outOf}.` };
+    rows.push({ child_id: key.slice(6), quiz_title: title, score, out_of: outOf, taken_on: date });
+  }
+  if (!rows.length) return { error: "Enter at least one score." };
+  const { error } = await supabase.from("quiz_scores").insert(rows);
+  if (error) return { error: "Could not save the scores. Please try again." };
+  revalidatePath("/admin", "layout");
+  revalidatePath("/portal", "layout");
+  redirect("/admin/quizzes");
+}
+
+export async function deleteQuizScore(f: FormData) {
+  const { supabase } = await requireAdmin();
+  await supabase.from("quiz_scores").delete().eq("id", text(f, "id"));
+  revalidatePath("/admin", "layout");
+  revalidatePath("/portal", "layout");
+}
+
+// ---------------------------------------------------------------- volunteer references and checks
+export async function updateVetting(f: FormData) {
+  const { supabase } = await requireAdmin();
+  const id = text(f, "id");
+  const { data: v } = await supabase.from("volunteers").select("referees").eq("id", id).maybeSingle();
+  if (!v) fail("/admin/volunteers", NOT_DONE);
+  const referees = v!.referees.map((r, i) => {
+    const status = text(f, `ref_status_${i}`);
+    return { ...r, status: (refereeStatuses as readonly string[]).includes(status) ? (status as (typeof refereeStatuses)[number]) : r.status };
+  });
+  const { data, error } = await supabase.from("volunteers").update({
+    referees,
+    vetting_complete: f.get("vetting_complete") === "on",
+    vetting_notes: text(f, "vetting_notes") || null,
+  }).eq("id", id).select("id");
+  if (error || !data?.length) fail("/admin/volunteers", NOT_DONE);
+  revalidatePath("/admin", "layout");
+  redirect("/admin/volunteers?updated=1");
 }

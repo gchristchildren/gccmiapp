@@ -1,3 +1,4 @@
+import { JoinZoom } from "@/components/JoinZoom";
 import { Card } from "@/components/ui";
 import { requireUser } from "@/lib/auth";
 import { ageLabel, fmtDate, fmtDateTime } from "@/lib/format";
@@ -7,16 +8,21 @@ export const dynamic = "force-dynamic";
 
 export default async function Schedule() {
   const { supabase } = await requireUser();
-  const [{ data: kids }, { data: sessions }, { data: att }] = await Promise.all([
+  const [{ data: kids }, { data: sessions }, { data: att }, { data: links }] = await Promise.all([
     supabase.from("children").select("id, first_name, age_group"),
     supabase.from("sessions").select("*").order("starts_at"),
     supabase.from("attendance").select("session_id, child_id, present"),
+    // Row-level security only returns links for matching families, from 30 minutes before class.
+    supabase.from("session_links").select("session_id, zoom_url"),
   ]);
+  const zoom = new Map((links ?? []).map((l) => [l.session_id, l.zoom_url]));
   const groups = new Set((kids ?? []).map((k) => k.age_group));
   const mine = (sessions ?? []).filter((s) => s.age_group === "all" || groups.has(s.age_group));
   const now = Date.now();
-  const upcoming = mine.filter((s) => new Date(s.starts_at).getTime() >= now);
-  const past = mine.filter((s) => new Date(s.starts_at).getTime() < now).reverse();
+  // A class that started less than two hours ago still counts as current, so its Join button stays available.
+  const cutoff = now - 2 * 3_600_000;
+  const upcoming = mine.filter((s) => new Date(s.starts_at).getTime() >= cutoff);
+  const past = mine.filter((s) => new Date(s.starts_at).getTime() < cutoff).reverse();
   const name = new Map((kids ?? []).map((k) => [k.id, k.first_name]));
 
   return (
@@ -29,6 +35,7 @@ export default async function Schedule() {
             <Card key={s.id} className="p-5 text-sm">
               <p className="text-base font-bold">{s.title}</p>
               <p className="text-muted">{fmtDateTime(s.starts_at)}{s.venue ? ` · ${s.venue}` : ""} · {ageLabel(s.age_group)}</p>
+              <JoinZoom url={zoom.get(s.id)} startsAt={s.starts_at} />
             </Card>
           ))}
           {!upcoming.length && <p className="text-sm text-muted">No upcoming sessions yet.</p>}

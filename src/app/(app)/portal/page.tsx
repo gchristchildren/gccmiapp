@@ -1,5 +1,6 @@
 import { BookOpen, FileWarning, Plus } from "lucide-react";
 import Link from "next/link";
+import { JoinZoom } from "@/components/JoinZoom";
 import { PushToggle } from "@/components/PushToggle";
 import { Card } from "@/components/ui";
 import { countries } from "@/lib/countries";
@@ -14,15 +15,17 @@ export default async function PortalHome() {
   const { supabase, user, profile } = await requireUser();
   const now = new Date().toISOString();
 
-  const [{ data: children }, { data: upcoming }, { data: past }, { data: notes }, { data: forms }, { data: sigs }] =
+  const [{ data: children }, { data: upcoming }, { data: past }, { data: notes }, { data: forms }, { data: sigs }, { data: links }] =
     await Promise.all([
       supabase.from("children").select("*").order("created_at"),
-      supabase.from("sessions").select("*").gte("starts_at", now).order("starts_at").limit(20),
+      supabase.from("sessions").select("*").gte("starts_at", new Date(Date.now() - 2 * 3_600_000).toISOString()).order("starts_at").limit(20),
       supabase.from("sessions").select("*").lt("starts_at", now).not("memory_verse", "is", null).order("starts_at", { ascending: false }).limit(1),
       supabase.from("announcements").select("*").order("created_at", { ascending: false }).limit(3),
       supabase.from("consent_forms").select("id").eq("required", true),
       supabase.from("consent_signatures").select("form_id, child_id").eq("signed_by", user.id),
+      supabase.from("session_links").select("session_id, zoom_url"),
     ]);
+  const zoom = new Map((links ?? []).map((l) => [l.session_id, l.zoom_url]));
 
   const kids = children ?? [];
   const groups = new Set(kids.map((c) => c.age_group));
@@ -82,6 +85,7 @@ export default async function PortalHome() {
                 <p className="font-semibold">{s.title}</p>
                 <p className="text-muted">{fmtDateTime(s.starts_at)}{s.venue ? ` · ${s.venue}` : ""}</p>
                 <p className="mt-1 text-xs text-brand">{ageLabel(s.age_group)}</p>
+                <JoinZoom url={zoom.get(s.id)} startsAt={s.starts_at} />
               </li>
             ))}
             {!next.length && <li className="text-sm text-muted">No upcoming sessions for your children&apos;s age groups yet.</li>}

@@ -47,3 +47,8 @@ export const photoUses = [
 
 /** Version recorded with each parent consent, so we know which wording they agreed to. */
 export const CONSENT_VERSION = "policy-pack-1.0";
+
+export const refereeStatuses = ["not contacted", "requested", "received", "declined"] as const;
+
+/** A Zoom link must be an https address (the database enforces the same rule). */
+export const isHttpsUrl = (u: string) => /^https:\/\/\S+$/i.test(u) && u.length <= 500;

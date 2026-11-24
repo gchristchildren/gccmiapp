@@ -4,7 +4,7 @@ import { ConsentCheckbox } from "@/components/ConsentCheckbox";
 import { Card } from "@/components/ui";
 import { requireUser } from "@/lib/auth";
 import { addChild, confirmConsent, deleteChild, updatePhotoPermissions } from "@/lib/actions/portal";
-import { ageGroups, ageLabel, photoUses } from "@/lib/format";
+import { ageGroups, ageLabel, fmtDate, photoUses } from "@/lib/format";
 
 export const metadata = { title: "My children" };
 export const dynamic = "force-dynamic";
@@ -14,9 +14,10 @@ type Flash = { error?: string; added?: string; photos?: string; consented?: stri
 export default async function Children({ searchParams }: { searchParams: Promise<Flash> }) {
   const { error, added, photos, consented } = await searchParams;
   const { supabase, user } = await requireUser();
-  const [{ data: kids }, { data: uploads }] = await Promise.all([
+  const [{ data: kids }, { data: uploads }, { data: quizzes }] = await Promise.all([
     supabase.from("children").select("*").order("created_at"),
     supabase.from("assignments").select("id, child_id, file_path, file_name, file_size, note, created_at").order("created_at", { ascending: false }),
+    supabase.from("quiz_scores").select("id, child_id, quiz_title, score, out_of, taken_on").order("taken_on", { ascending: false }),
   ]);
   const input = "mt-1 w-full rounded-2xl border border-line bg-bg px-4 py-3 text-sm";
   const ok = "rounded-2xl bg-brand-soft px-4 py-3 text-sm text-brand";
@@ -56,6 +57,20 @@ export default async function Children({ searchParams }: { searchParams: Promise
                 <ConsentCheckbox />
                 <button className="rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-brand-fg hover:opacity-90 sm:w-fit">Confirm consent</button>
               </form>
+            )}
+
+            {!!(quizzes ?? []).some((q) => q.child_id === c.id) && (
+              <div className="mt-4 border-t border-line pt-4">
+                <h3 className="text-sm font-bold">Bible Quiz scores</h3>
+                <ul className="mt-2 space-y-1.5 text-sm">
+                  {(quizzes ?? []).filter((q) => q.child_id === c.id).map((q) => (
+                    <li key={q.id} className="flex items-center justify-between gap-3 rounded-2xl bg-surface-2 px-4 py-2">
+                      <span className="min-w-0 [overflow-wrap:anywhere]">{q.quiz_title} <span className="text-muted">· {fmtDate(q.taken_on)}</span></span>
+                      <span className="shrink-0 rounded-full bg-brand-soft px-3 py-0.5 font-semibold text-brand">{q.score}/{q.out_of}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             )}
 
             <details className="mt-4 border-t border-line pt-4">

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { volunteerSkills as skills } from "@/lib/content";
 
@@ -21,6 +22,7 @@ export function VolunteerForm() {
         phone: f.get("phone"),
         message: f.get("message"),
         skills: selected,
+        referees: [1, 2].map((n) => ({ name: f.get(`ref${n}_name`), relationship: f.get(`ref${n}_relationship`), email: f.get(`ref${n}_email`), phone: f.get(`ref${n}_phone`) })),
       }),
     }).catch(() => null);
     const data = res ? await res.json().catch(() => ({})) : {};
@@ -53,6 +55,22 @@ export function VolunteerForm() {
             );
           })}
         </div>
+      </fieldset>
+      <fieldset className="space-y-4 rounded-2xl border border-line p-4">
+        <legend className="px-2 text-sm font-medium">Referees (optional now, needed before you work with children)</legend>
+        <p className="text-xs text-muted">
+          Give two people who know you and can speak about you, such as a church leader, employer or teacher (not family). Please tell
+          them you have named them. We will contact them only about this role. See our <Link href="/privacy" className="font-medium text-brand">Privacy Notice</Link>.
+        </p>
+        {[1, 2].map((n) => (
+          <div key={n} className="grid gap-3 sm:grid-cols-2">
+            <p className="text-sm font-medium sm:col-span-2">Referee {n}</p>
+            <label className="block text-sm">Name<input name={`ref${n}_name`} className={input} /></label>
+            <label className="block text-sm">How they know you<input name={`ref${n}_relationship`} className={input} /></label>
+            <label className="block text-sm">Email<input name={`ref${n}_email`} type="email" className={input} /></label>
+            <label className="block text-sm">Phone<input name={`ref${n}_phone`} type="tel" className={input} /></label>
+          </div>
+        ))}
       </fieldset>
       <label className="block text-sm font-medium">Anything else? (availability, events you&apos;d like to help at)<textarea name="message" rows={4} className={input} /></label>
       {state.msg && (
