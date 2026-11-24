@@ -341,11 +341,14 @@ export async function deleteConsentForm(f: FormData) {
 const postSlug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "").slice(0, 70) || "post";
 const coverOk = (u: string) => !u || /^(https:\/\/|\/)/.test(u);
 
-export async function createPost(f: FormData) {
+export type PostState = { error?: string; saved?: { id: string; created: boolean } } | null;
+
+/** Saves a new post. Returns an error to show on the form, or the new post's id (the form then opens it). */
+export async function createPost(_prev: PostState, f: FormData): Promise<PostState> {
   const { supabase } = await requireAdmin();
   const title = text(f, "title");
-  if (!title) fail("/admin/posts", "A title is required.");
-  if (!coverOk(text(f, "cover_url"))) fail("/admin/posts", "The cover image link must start with https://");
+  if (!title) return { error: "A title is required." };
+  if (!coverOk(text(f, "cover_url"))) return { error: "The cover image link must start with https://" };
   const date = text(f, "published_at");
   const { data, error } = await supabase.from("posts").insert({
     slug: `${postSlug(title)}-${Math.random().toString(36).slice(2, 6)}`,
@@ -356,18 +359,16 @@ export async function createPost(f: FormData) {
     published: f.get("published") === "on",
     ...(date ? { published_at: new Date(date + "T12:00:00Z").toISOString() } : {}),
   }).select("id").single();
-  if (error || !data) fail("/admin/posts", "Could not save the post.");
-  revalidatePath("/blog");
-  revalidatePath("/");
-  redirect(`/admin/posts/${data!.id}?created=1`);
+  if (error || !data) return { error: "Could not save the post." };
+  // /blog and the home page are rendered fresh on every visit, so no cache refresh is needed.
+  return { saved: { id: data.id, created: true } };
 }
 
-export async function updatePost(f: FormData) {
+export async function updatePost(_prev: PostState, f: FormData): Promise<PostState> {
   const { supabase } = await requireAdmin();
   const id = text(f, "id");
-  const page = `/admin/posts/${id}`;
-  if (!text(f, "title")) fail(page, "A title is required.");
-  if (!coverOk(text(f, "cover_url"))) fail(page, "The cover image link must start with https://");
+  if (!text(f, "title")) return { error: "A title is required." };
+  if (!coverOk(text(f, "cover_url"))) return { error: "The cover image link must start with https://" };
   const date = text(f, "published_at");
   const { data, error } = await supabase.from("posts").update({
     title: text(f, "title"),
@@ -377,11 +378,8 @@ export async function updatePost(f: FormData) {
     published: f.get("published") === "on",
     ...(date ? { published_at: new Date(date + "T12:00:00Z").toISOString() } : {}),
   }).eq("id", id).select("id, slug");
-  if (error || !data?.length) fail(page, NOT_DONE);
-  revalidatePath("/blog");
-  revalidatePath(`/blog/${data![0].slug}`);
-  revalidatePath("/");
-  redirect(`${page}?updated=1`);
+  if (error || !data?.length) return { error: NOT_DONE };
+  return { saved: { id, created: false } };
 }
 
 export async function deletePost(f: FormData) {

@@ -1,8 +1,7 @@
 import Link from "next/link";
-import { CoverUpload } from "@/components/CoverUpload";
+import { PostForm } from "@/components/PostForm";
 import { Card } from "@/components/ui";
 import { requireAdmin } from "@/lib/auth";
-import { createPost } from "@/lib/actions/admin";
 
 export const metadata = { title: "Blog posts" };
 export const dynamic = "force-dynamic";
@@ -11,7 +10,6 @@ export default async function AdminPosts({ searchParams }: { searchParams: Promi
   const { error, deleted } = await searchParams;
   const { supabase } = await requireAdmin();
   const { data } = await supabase.from("posts").select("id, title, published, published_at").order("published_at", { ascending: false });
-  const input = "mt-1 w-full rounded-2xl border border-line bg-bg px-4 py-3 text-sm";
 
   return (
     <div className="mx-auto max-w-4xl space-y-6">
@@ -20,17 +18,7 @@ export default async function AdminPosts({ searchParams }: { searchParams: Promi
       {deleted && <p role="status" className="rounded-2xl bg-brand-soft px-4 py-3 text-sm text-brand">Post deleted.</p>}
       <Card>
         <h2 className="font-bold">New post</h2>
-        <form action={createPost} className="mt-4 grid gap-4 sm:grid-cols-2">
-          <label className="text-sm font-medium sm:col-span-2">Title<input name="title" required className={input} /></label>
-          <label className="text-sm font-medium sm:col-span-2">Short summary (shown on the blog list)<textarea name="excerpt" rows={2} className={input} /></label>
-          <label className="text-sm font-medium sm:col-span-2">Post text
-            <textarea name="body" rows={10} className={input} placeholder={"Write paragraphs separated by a blank line.\n\n## A heading\n\n- A bullet\n- Another bullet\n\n[A link](https://example.com)"} />
-          </label>
-          <CoverUpload inputClass={input} />
-                    <label className="text-sm font-medium">Date<input name="published_at" type="date" className={input} /></label>
-          <label className="flex items-center gap-3 text-sm sm:col-span-2"><input type="checkbox" name="published" defaultChecked className="size-4 accent-[var(--brand)]" /> Publish now</label>
-          <button className="rounded-full bg-brand px-6 py-3 text-sm font-semibold text-brand-fg hover:opacity-90 sm:w-fit">Create post</button>
-        </form>
+        <div className="mt-4"><PostForm /></div>
       </Card>
       <div className="space-y-3">
         {(data ?? []).map((p) => (
