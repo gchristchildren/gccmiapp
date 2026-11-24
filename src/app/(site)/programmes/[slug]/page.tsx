@@ -1,4 +1,5 @@
 import { Check } from "lucide-react";
+import { Inline } from "@/components/RichText";
 import { JsonLd } from "@/components/JsonLd";
 import { notFound } from "next/navigation";
 import { ButtonLink, Card, Container, PageHero } from "@/components/ui";
@@ -105,7 +106,7 @@ export default async function Programme({ params }: { params: Promise<{ slug: st
                   {f.q}
                   <span className="text-brand transition group-open:rotate-45">+</span>
                 </summary>
-                <p className="mt-3 text-sm text-muted">{f.a}</p>
+                <p className="mt-3 text-sm text-muted"><Inline text={f.a} /></p>
               </details>
             ))}
           </div>

@@ -25,7 +25,8 @@ export default async function AdminPosts({ searchParams }: { searchParams: Promi
           <label className="text-sm font-medium sm:col-span-2">Post text
             <textarea name="body" rows={10} className={input} placeholder={"Write paragraphs separated by a blank line.\n\n## A heading\n\n- A bullet\n- Another bullet\n\n[A link](https://example.com)"} />
           </label>
-          <label className="text-sm font-medium">Cover image link (https://)<input name="cover_url" type="url" className={input} /></label>
+          <label className="text-sm font-medium sm:col-span-2">Cover image (upload a JPG, PNG or WebP, up to 5 MB)<input name="cover_file" type="file" accept="image/jpeg,image/png,image/webp" className={input} /></label>
+          <label className="text-sm font-medium">Or a cover image link (https://)<input name="cover_url" type="url" className={input} /></label>
           <label className="text-sm font-medium">Date<input name="published_at" type="date" className={input} /></label>
           <label className="flex items-center gap-3 text-sm sm:col-span-2"><input type="checkbox" name="published" defaultChecked className="size-4 accent-[var(--brand)]" /> Publish now</label>
           <button className="rounded-full bg-brand px-6 py-3 text-sm font-semibold text-brand-fg hover:opacity-90 sm:w-fit">Create post</button>

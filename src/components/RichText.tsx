@@ -6,7 +6,7 @@ import Link from "next/link";
  */
 const inlineRe = /(\*\*[^*]+\*\*|\[[^\]]+\]\((?:https?:\/\/|\/)[^)\s]+\))/g;
 
-function Inline({ text }: { text: string }) {
+export function Inline({ text }: { text: string }) {
   return (
     <>
       {text.split(inlineRe).map((part, i) => {

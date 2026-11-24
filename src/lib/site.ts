@@ -24,8 +24,8 @@ export const site = {
   justGivingUrl: process.env.NEXT_PUBLIC_JUSTGIVING_URL ?? null,
   contact: {
     address: ["574 Gorgie Road", "Edinburgh", "Scotland EH11 3AL", "UK"],
-    phone: "+44 7563 803544",
-    phoneHref: "tel:+447563803544",
+    phone: "+44 7553 517292",
+    phoneHref: "tel:+447553517292",
     email: "info@gccmi.co.uk",
   },
   social: {
@@ -48,4 +48,5 @@ export const nav = [
   { href: "/blog", label: "Blog" },
   { href: "/books", label: "Books" },
   { href: "/volunteer", label: "Volunteer" },
+  { href: "/contact", label: "Contact" },
 ];

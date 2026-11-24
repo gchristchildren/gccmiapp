@@ -20,6 +20,7 @@ import { galleryPhotos } from "@/lib/gallery";
 import { fetchPostSummaries } from "@/lib/posts";
 import { faqSchema, pageMeta } from "@/lib/seo";
 import { site } from "@/lib/site";
+import { Inline } from "@/components/RichText";
 import { JsonLd } from "@/components/JsonLd";
 
 const homeTitle = `${site.name} | Free Online Bible Club for Children, Academy & Masterclass`;
@@ -381,7 +382,7 @@ export default async function Home() {
                   {f.q}
                   <span className="text-brand transition group-open:rotate-45">+</span>
                 </summary>
-                <p className="mt-3 text-sm text-muted">{f.a}</p>
+                <p className="mt-3 text-sm text-muted"><Inline text={f.a} /></p>
               </details>
             ))}
           </div>

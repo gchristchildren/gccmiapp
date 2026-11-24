@@ -14,7 +14,10 @@ export const fmtMoney = (pence: number) =>
 // The groups GCCMI uses for Bible Club classes (see gccmi.co.uk).
 export const ageGroups = ["Kids", "Pre-Teens", "Teens"] as const;
 
-export const ageLabel = (group: string) => (group === "all" ? "All ages" : group);
+const ageBrackets: Record<string, string> = { Kids: "Kids (4–8)", "Pre-Teens": "Pre-Teens (9–12)", Teens: "Teens (13–18)" };
+
+/** Display name for an age group, with its age bracket. The stored value stays "Kids", "Pre-Teens" or "Teens". */
+export const ageLabel = (group: string) => (group === "all" ? "All ages" : (ageBrackets[group] ?? group));
 
 /** Turns a datetime-local value typed in UK time into an ISO timestamp. */
 export function ukLocalToIso(value: string) {

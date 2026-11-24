@@ -2,7 +2,7 @@ import { Trash2 } from "lucide-react";
 import { Card } from "@/components/ui";
 import { requireUser } from "@/lib/auth";
 import { addChild, deleteChild } from "@/lib/actions/portal";
-import { ageGroups } from "@/lib/format";
+import { ageGroups, ageLabel } from "@/lib/format";
 
 export const metadata = { title: "My children" };
 export const dynamic = "force-dynamic";
@@ -24,7 +24,7 @@ export default async function Children({ searchParams }: { searchParams: Promise
           <Card key={c.id} className="flex items-start justify-between gap-3 p-5">
             <div className="text-sm">
               <p className="text-base font-bold">{c.first_name} {c.last_name}</p>
-              <p className="text-muted">Age group {c.age_group} · born {c.date_of_birth}</p>
+              <p className="text-muted">Age group {ageLabel(c.age_group)} · born {c.date_of_birth}</p>
               <p className="mt-1 text-xs text-muted">Photo consent: {c.photo_consent ? "Yes" : "No"}</p>
             </div>
             <form action={deleteChild}>
@@ -47,7 +47,7 @@ export default async function Children({ searchParams }: { searchParams: Promise
           <label className="text-sm font-medium">Age group
             <select name="age_group" required className={input} defaultValue="">
               <option value="" disabled>Choose…</option>
-              {ageGroups.map((g) => <option key={g} value={g}>{g}</option>)}
+              {ageGroups.map((g) => <option key={g} value={g}>{ageLabel(g)}</option>)}
             </select>
           </label>
           <label className="text-sm font-medium sm:col-span-2">Allergies or medical notes (optional)

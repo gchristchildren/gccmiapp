@@ -25,7 +25,7 @@ export default async function Sessions({ searchParams }: { searchParams: Promise
           <label className="text-sm font-medium">Age group
             <select name="age_group" className={input} defaultValue="all">
               <option value="all">All ages</option>
-              {ageGroups.map((g) => <option key={g} value={g}>{g}</option>)}
+              {ageGroups.map((g) => <option key={g} value={g}>{ageLabel(g)}</option>)}
             </select>
           </label>
           <label className="text-sm font-medium sm:col-span-2">Venue<input name="venue" className={input} /></label>

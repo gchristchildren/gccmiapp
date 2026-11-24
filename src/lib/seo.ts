@@ -116,7 +116,7 @@ export function faqSchema(list: { q: string; a: string }[]) {
     mainEntity: list.map((f) => ({
       "@type": "Question",
       name: f.q,
-      acceptedAnswer: { "@type": "Answer", text: f.a },
+      acceptedAnswer: { "@type": "Answer", text: f.a.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1") },
     })),
   };
 }

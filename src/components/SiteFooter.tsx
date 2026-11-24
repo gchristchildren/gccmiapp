@@ -22,7 +22,6 @@ export function SiteFooter() {
               </li>
             ))}
             <li><a href={site.donateUrl} target="_blank" rel="noopener noreferrer" className="hover:text-fg">Donate</a></li>
-            <li><Link href="/contact" className="hover:text-fg">Contact</Link></li>
             <li><a href={site.store} target="_blank" rel="noopener noreferrer" className="hover:text-fg">Store</a></li>
             <li><Link href="/instructors" className="hover:text-fg">Our instructors</Link></li>
           </ul>

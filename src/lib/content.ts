@@ -74,8 +74,9 @@ export const programmes = [
     faqs: [
       { q: "Is the Bible Club really free?", a: "Yes. GCCMI’s online Bible Club is free for all Christian children worldwide and has been running since 2016." },
       { q: "When are the Bible Club classes?", a: "Classes run live on Zoom every Friday at 7pm and Saturday at 12pm for any age group, with Saturday 7pm for Kids and Pre-Teens and 8pm for Teens (UK time)." },
-      { q: "What age groups does Bible Club cover?", a: "Children join one of three age groups: Kids, Pre-Teens or Teens. Parents choose the right group when registering their child." },
-      { q: "What does my child need to join?", a: "A laptop, desktop, iPad or phone with internet, a Bible, a pen and a jotter." },
+      { q: "What age groups does Bible Club cover?", a: "Children join one of three age groups: Kids (4–8), Pre-Teens (9–12) or Teens (13–18). Parents choose the right group when registering their child." },
+      { q: "How do I join?", a: "Contact us on info@gccmi.co.uk or complete our [enquiries form](/contact)." },
+      { q: "What does my child need to join?", a: "A laptop, desktop, iPad or phone with internet, a Bible, a pen and a jotter, and our weekly Bible lesson booklets, which you can [buy here](https://www.amazon.co.uk/stores/GCCM-International/author/B0B2KQKCVL?ref=ap_rdr&shoppingPortalEnabled=true)." },
     ],
     name: "Bible Club",
     short: "Our free online Bible Club teaches Christian children the Word of God, every week, from the comfort of their homes.",
@@ -177,6 +178,8 @@ export const programmes = [
       { q: "Who is the Masterclass for?", a: "It is created for adults of all skill levels, including parents who want practical support alongside their children’s learning." },
       { q: "Can I join at any time?", a: "Yes. The Masterclass is a rolling programme, so students can join at any time." },
       { q: "Do I have to attend live?", a: "No. You can join live sessions and answer questions afterwards, or watch the class webinar video later." },
+      { q: "How long is each session?", a: "Each session lasts 90 minutes (1 hour 30 minutes): 60 minutes of class and 30 minutes of questions and answers." },
+      { q: "How does it work?", a: "Register through the portal, then register for the course you are interested in. You can join the live course sessions, or watch the class webinar video later. Joining live gives you the chance to ask questions after the class." },
       { q: "Do GCC parents get a discount?", a: "Yes. GCC parents receive discounted fees and further learning facilities." },
     ],
     name: "Masterclass",
@@ -212,8 +215,10 @@ export const programmes = [
       {
         title: "How it works",
         items: [
+          "Register through the portal.",
+          "Register for the course you are interested in.",
           "You can join our live course sessions, or watch the class webinar video later.",
-          "Joining live gives you the chance to answer questions after the class.",
+          "Joining live gives you the chance to ask questions after the class. Each session is 90 minutes: 60 minutes of class and 30 minutes of Q&A.",
         ],
       },
     ],
@@ -233,7 +238,7 @@ export const faqs = [
   },
   {
     q: "How do I register my child for Bible Club?",
-    a: "Create a parent account, add your child, and choose their age group: Kids, Pre-Teens or Teens. You'll then see the weekly schedule and get reminders.",
+    a: "Create a parent account, add your child, and choose their age group: Kids (4–8), Pre-Teens (9–12) or Teens (13–18). You'll then see the weekly schedule and get reminders.",
   },
   {
     q: "Is my child's information safe?",

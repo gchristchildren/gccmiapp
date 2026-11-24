@@ -12,6 +12,8 @@ const nextConfig: NextConfig = {
     ];
   },
   experimental: {
+    // Blog cover images are uploaded through a server action (5 MB max, checked in the action).
+    serverActions: { bodySizeLimit: "6mb" },
     // Keep visited pages in the browser's router cache for a short while, so going back and forth
     // between pages is instant. Saving a change always refreshes the affected pages.
     staleTimes: { dynamic: 30, static: 300 },

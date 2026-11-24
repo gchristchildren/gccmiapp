@@ -63,7 +63,7 @@ export default async function SessionDetail({ params, searchParams }: { params: 
             <label className="text-sm font-medium">Age group
               <select name="age_group" defaultValue={s.age_group} className={input}>
                 <option value="all">All ages</option>
-                {ageGroups.map((g) => <option key={g} value={g}>{g}</option>)}
+                {ageGroups.map((g) => <option key={g} value={g}>{ageLabel(g)}</option>)}
               </select>
             </label>
             <label className="text-sm font-medium sm:col-span-2">Venue<input name="venue" defaultValue={s.venue} className={input} /></label>

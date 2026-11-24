@@ -2,7 +2,7 @@ import { Card } from "@/components/ui";
 import { ConfirmButton } from "@/components/ConfirmButton";
 import { requireAdmin } from "@/lib/auth";
 import { deleteChildAdmin, deleteFamily, updateChild, updateParent } from "@/lib/actions/admin";
-import { ageGroups, fmtDate } from "@/lib/format";
+import { ageGroups, ageLabel, fmtDate } from "@/lib/format";
 
 export const metadata = { title: "Families" };
 export const dynamic = "force-dynamic";
@@ -77,7 +77,7 @@ export default async function Families({ searchParams }: { searchParams: Promise
                         <label className="font-medium">Last name<input name="last_name" required defaultValue={k.last_name} className={input} /></label>
                         <label className="font-medium">Date of birth<input name="date_of_birth" type="date" required defaultValue={k.date_of_birth} className={input} /></label>
                         <label className="font-medium">Age group
-                          <select name="age_group" defaultValue={k.age_group} className={input}>{ageGroups.map((g) => <option key={g} value={g}>{g}</option>)}</select>
+                          <select name="age_group" defaultValue={k.age_group} className={input}>{ageGroups.map((g) => <option key={g} value={g}>{ageLabel(g)}</option>)}</select>
                         </label>
                         <label className="font-medium sm:col-span-2">Medical notes<textarea name="medical_notes" rows={2} defaultValue={k.medical_notes ?? ""} className={input} /></label>
                         <label className="flex items-center gap-3 sm:col-span-2"><input type="checkbox" name="photo_consent" defaultChecked={k.photo_consent} className="size-4 accent-[var(--brand)]" /> Photo consent given</label>
