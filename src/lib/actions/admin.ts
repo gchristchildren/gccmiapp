@@ -400,9 +400,9 @@ export async function saveDefaultZoom(f: FormData) {
 }
 
 // ---------------------------------------------------------------- quiz scores
-export type QuizState = { error?: string } | null;
+export type QuizState = { error?: string; saved?: number } | null;
 
-/** Returns an error to show on the form, or saves the scores and goes back to the list. */
+/** Returns an error to show on the form, or saves the scores and returns how many (the form then goes back to the list). */
 export async function recordQuiz(_prev: QuizState, f: FormData): Promise<QuizState> {
   const { supabase } = await requireAdmin();
   const title = text(f, "quiz_title");
@@ -421,9 +421,8 @@ export async function recordQuiz(_prev: QuizState, f: FormData): Promise<QuizSta
   if (!rows.length) return { error: "Enter at least one score." };
   const { error } = await supabase.from("quiz_scores").insert(rows);
   if (error) return { error: "Could not save the scores. Please try again." };
-  revalidatePath("/admin", "layout");
-  revalidatePath("/portal", "layout");
-  redirect("/admin/quizzes");
+  // These pages are rendered fresh on every visit, so no cache refresh is needed.
+  return { saved: rows.length };
 }
 
 export async function deleteQuizScore(f: FormData) {
@@ -434,11 +433,13 @@ export async function deleteQuizScore(f: FormData) {
 }
 
 // ---------------------------------------------------------------- volunteer references and checks
-export async function updateVetting(f: FormData) {
+export type VettingState = { error?: string; saved?: boolean } | null;
+
+export async function updateVetting(_prev: VettingState, f: FormData): Promise<VettingState> {
   const { supabase } = await requireAdmin();
   const id = text(f, "id");
   const { data: v } = await supabase.from("volunteers").select("referees").eq("id", id).maybeSingle();
-  if (!v) fail("/admin/volunteers", NOT_DONE);
+  if (!v) return { error: NOT_DONE };
   const referees = v!.referees.map((r, i) => {
     const status = text(f, `ref_status_${i}`);
     return { ...r, status: (refereeStatuses as readonly string[]).includes(status) ? (status as (typeof refereeStatuses)[number]) : r.status };
@@ -448,7 +449,6 @@ export async function updateVetting(f: FormData) {
     vetting_complete: f.get("vetting_complete") === "on",
     vetting_notes: text(f, "vetting_notes") || null,
   }).eq("id", id).select("id");
-  if (error || !data?.length) fail("/admin/volunteers", NOT_DONE);
-  revalidatePath("/admin", "layout");
-  redirect("/admin/volunteers?updated=1");
+  if (error || !data?.length) return { error: NOT_DONE };
+  return { saved: true };
 }

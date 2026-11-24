@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import { recordQuiz, type QuizState } from "@/lib/actions/admin";
 
 type Kid = { id: string; name: string; group: string };
@@ -8,6 +8,10 @@ type Kid = { id: string; name: string; group: string };
 /** Quiz entry: one title/date/total, then a score box for each child. Errors show here; success returns to the list. */
 export function QuizForm({ groups, today }: { groups: { label: string; kids: Kid[] }[]; today: string }) {
   const [state, action, pending] = useActionState<QuizState, FormData>(recordQuiz, null);
+  useEffect(() => {
+    // A full page load is the reliable way back to the list after saving.
+    if (state?.saved) window.location.assign(`/admin/quizzes?saved=${state.saved}`);
+  }, [state]);
   const input = "mt-1 w-full rounded-2xl border border-line bg-bg px-4 py-2.5 text-sm";
   return (
     <form action={action} className="space-y-5">
