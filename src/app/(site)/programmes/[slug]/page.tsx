@@ -1,6 +1,7 @@
 import { Check } from "lucide-react";
 import { Inline } from "@/components/RichText";
 import { JsonLd } from "@/components/JsonLd";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ButtonLink, Card, Container, PageHero } from "@/components/ui";
 import { programmes } from "@/lib/content";
@@ -26,9 +27,11 @@ export default async function Programme({ params }: { params: Promise<{ slug: st
   if (!p) notFound();
 
   // Masterclass shows its published courses and schedules (lessons themselves are members-only).
-  const { data: courses } = p.slug === "masterclass"
-    ? await createPublicClient().from("courses").select("id, title, description, schedule_note").eq("published", true).order("created_at")
+  const { data: allCourses } = p.slug === "masterclass"
+    ? await createPublicClient().from("courses").select("id, title, description, schedule_note, kind, event_at").eq("published", true).order("created_at")
     : { data: null };
+  // A finished live class drops off the list three hours after it starts.
+  const courses = (allCourses ?? []).filter((c) => c.kind !== "live" || (c.event_at && new Date(c.event_at).getTime() >= Date.now() - 3 * 3_600_000));
 
   return (
     <>
@@ -113,13 +116,25 @@ export default async function Programme({ params }: { params: Promise<{ slug: st
         </div>
         {!!courses?.length && (
           <div className="space-y-4 md:col-span-2">
-            <h2 className="text-xl font-bold">Courses</h2>
+            <h2 className="text-xl font-bold">Courses, live classes and replays</h2>
             <div className="grid gap-4 md:grid-cols-2">
               {courses.map((c) => (
                 <Card key={c.id}>
+                  {c.kind === "live" && c.event_at ? (
+                    <p className="text-xs font-semibold text-brand">Live class · {new Date(c.event_at).toLocaleString("en-GB", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "Europe/London" })} (UK time)</p>
+                  ) : c.kind === "replay" ? (
+                    <p className="text-xs font-semibold text-brand">Replay</p>
+                  ) : null}
                   <h3 className="font-bold">{c.title}</h3>
-                  {c.schedule_note && <p className="text-xs font-medium text-brand">{c.schedule_note}</p>}
+                  {c.kind === "course" && c.schedule_note && <p className="text-xs font-medium text-brand">{c.schedule_note}</p>}
                   <p className="mt-2 text-sm text-muted">{c.description}</p>
+                  {c.kind !== "course" && (
+                    <p className="mt-3 text-sm">
+                      <Link href="/portal/masterclass" className="font-semibold text-brand">
+                        {c.kind === "live" ? "Sign in to say you'd like to attend →" : "Sign in to request access to the video →"}
+                      </Link>
+                    </p>
+                  )}
                 </Card>
               ))}
             </div>

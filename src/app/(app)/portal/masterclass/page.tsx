@@ -1,8 +1,10 @@
 import { Award, Clock } from "lucide-react";
 import Link from "next/link";
+import { InterestButton } from "@/components/InterestButton";
 import { Card } from "@/components/ui";
 import { requireUser } from "@/lib/auth";
 import { registerMasterclass } from "@/lib/actions/masterclass";
+import { fmtDateTime } from "@/lib/format";
 
 export const metadata = { title: "Masterclass" };
 export const dynamic = "force-dynamic";
@@ -10,10 +12,19 @@ export const dynamic = "force-dynamic";
 export default async function Masterclass() {
   const { supabase, user } = await requireUser();
   const year = new Date().getFullYear();
-  const [{ data: memberships }, { data: courses }] = await Promise.all([
+  const [{ data: memberships }, { data: allClasses }, { data: interest }, { data: links }] = await Promise.all([
     supabase.from("masterclass_memberships").select("*").eq("profile_id", user.id).order("year", { ascending: false }),
     supabase.from("courses").select("*").eq("published", true).order("created_at"),
+    supabase.from("masterclass_interest").select("course_id, status").eq("profile_id", user.id),
+    // Row-level security only returns a link when this parent is allowed to see it right now.
+    supabase.from("course_links").select("course_id, url"),
   ]);
+  const courses = (allClasses ?? []).filter((c) => c.kind === "course");
+  const stage = Date.now() - 3 * 3_600_000;
+  const liveClasses = (allClasses ?? []).filter((c) => c.kind === "live" && c.event_at && new Date(c.event_at).getTime() >= stage).sort((a, b) => a.event_at!.localeCompare(b.event_at!));
+  const replays = (allClasses ?? []).filter((c) => c.kind === "replay");
+  const standing = new Map((interest ?? []).map((i) => [i.course_id, i.status]));
+  const link = new Map((links ?? []).map((l) => [l.course_id, l.url]));
   const active = (memberships ?? []).find((m) => m.status === "active");
   const current = (memberships ?? []).find((m) => m.year === year);
 
@@ -49,8 +60,40 @@ export default async function Masterclass() {
         </Card>
       )}
 
+      {!!liveClasses.length && (
+        <section className="space-y-3">
+          <h2 className="font-bold">Live classes</h2>
+          <div className="grid gap-4 md:grid-cols-2">
+            {liveClasses.map((c) => (
+              <Card key={c.id}>
+                <p className="text-xs font-semibold text-brand">{fmtDateTime(c.event_at!)} (UK time)</p>
+                <h3 className="mt-1 text-lg font-bold">{c.title}</h3>
+                {c.description && <p className="mt-2 text-sm text-muted">{c.description}</p>}
+                <InterestButton courseId={c.id} profileId={user.id} kind="live" status={standing.get(c.id)} url={link.get(c.id)} />
+              </Card>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {!!replays.length && (
+        <section className="space-y-3">
+          <h2 className="font-bold">Replays</h2>
+          <div className="grid gap-4 md:grid-cols-2">
+            {replays.map((c) => (
+              <Card key={c.id}>
+                <h3 className="text-lg font-bold">{c.title}</h3>
+                {c.description && <p className="mt-2 text-sm text-muted">{c.description}</p>}
+                <InterestButton courseId={c.id} profileId={user.id} kind="replay" status={standing.get(c.id)} url={link.get(c.id)} />
+              </Card>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {!!courses.length && <h2 className="font-bold">Courses</h2>}
       <div className="grid gap-4 md:grid-cols-2">
-        {(courses ?? []).map((c) => {
+        {courses.map((c) => {
           const ls = (lessons ?? []).filter((l) => l.course_id === c.id);
           const n = ls.filter((l) => done.has(l.id)).length;
           const cert = (certs ?? []).find((x) => x.course_id === c.id);
@@ -73,7 +116,7 @@ export default async function Masterclass() {
             <Card key={c.id}>{body}</Card>
           );
         })}
-        {!courses?.length && <p className="text-sm text-muted">Courses will be listed here soon.</p>}
+        {!allClasses?.length && <p className="text-sm text-muted">Classes will be listed here soon.</p>}
       </div>
     </div>
   );

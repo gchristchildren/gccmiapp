@@ -18,8 +18,8 @@ export type Database = {
   public: {
     Tables: {
       profiles: Table<
-        { id: string; full_name: string; phone: string | null; country: string | null; role: AppRole; skills: string[]; created_at: string },
-        { id: string; full_name?: string; phone?: string | null; country?: string | null; role?: AppRole; skills?: string[]; created_at?: string }
+        { id: string; full_name: string; phone: string | null; country: string | null; email: string | null; role: AppRole; skills: string[]; created_at: string },
+        { id: string; full_name?: string; phone?: string | null; country?: string | null; email?: string | null; role?: AppRole; skills?: string[]; created_at?: string }
       >;
       children: Table<
         {
@@ -237,6 +237,14 @@ export type Database = {
           created_at?: string;
         }
       >;
+      masterclass_interest: Table<
+        { course_id: string; profile_id: string; status: "interested" | "approved" | "declined"; created_at: string },
+        { course_id: string; profile_id: string; status?: "interested" | "approved" | "declined"; created_at?: string }
+      >;
+      course_links: Table<
+        { course_id: string; kind: "live" | "replay"; url: string },
+        { course_id: string; kind: "live" | "replay"; url: string }
+      >;
       event_media: Table<
         { id: string; event_id: string; kind: "image" | "video" | "embed"; path: string | null; thumb_path: string | null; embed_url: string | null; caption: string | null; created_at: string },
         { id?: string; event_id: string; kind: "image" | "video" | "embed"; path?: string | null; thumb_path?: string | null; embed_url?: string | null; caption?: string | null; created_at?: string }
@@ -322,6 +330,8 @@ export type Database = {
           description: string;
           schedule_note: string;
           starts_on: string | null;
+          kind: "course" | "live" | "replay";
+          event_at: string | null;
           published: boolean;
           created_at: string;
         },
@@ -332,6 +342,8 @@ export type Database = {
           description?: string;
           schedule_note?: string;
           starts_on?: string | null;
+          kind?: "course" | "live" | "replay";
+          event_at?: string | null;
           published?: boolean;
           created_at?: string;
         }
