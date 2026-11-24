@@ -1,12 +1,13 @@
 import type { MetadataRoute } from "next";
 import { programmes } from "@/lib/content";
+import { fetchPublicEvents } from "@/lib/events";
 import { fetchPostSummaries } from "@/lib/posts";
 import { abs } from "@/lib/seo";
 
 export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const posts = await fetchPostSummaries();
+  const [posts, events] = await Promise.all([fetchPostSummaries(), fetchPublicEvents()]);
   const fixed: [string, number, MetadataRoute.Sitemap[number]["changeFrequency"]][] = [
     ["/", 1, "weekly"],
     ...programmes.map((p): [string, number, "monthly"] => [`/programmes/${p.slug}`, 0.9, "monthly"]),
@@ -30,6 +31,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
   return [
     ...fixed.map(([path, priority, changeFrequency]) => ({ url: abs(path), priority, changeFrequency })),
+    ...events.map((e) => ({
+      url: abs(`/events/${e.slug}`),
+      lastModified: new Date(e.date),
+      changeFrequency: "monthly" as const,
+      priority: 0.5,
+    })),
     ...posts.map((p) => ({
       url: abs(`/blog/${p.slug}`),
       lastModified: new Date(p.published_at),

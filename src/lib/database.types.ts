@@ -237,6 +237,10 @@ export type Database = {
           created_at?: string;
         }
       >;
+      event_media: Table<
+        { id: string; event_id: string; kind: "image" | "video" | "embed"; path: string | null; thumb_path: string | null; embed_url: string | null; caption: string | null; created_at: string },
+        { id?: string; event_id: string; kind: "image" | "video" | "embed"; path?: string | null; thumb_path?: string | null; embed_url?: string | null; caption?: string | null; created_at?: string }
+      >;
       app_settings: Table<
         { key: string; value: string; updated_at: string },
         { key: string; value: string; updated_at?: string }

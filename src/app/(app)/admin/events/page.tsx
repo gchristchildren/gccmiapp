@@ -1,7 +1,7 @@
-import { Trash2 } from "lucide-react";
+import Link from "next/link";
 import { Card } from "@/components/ui";
 import { requireAdmin } from "@/lib/auth";
-import { createEvent, deleteEvent } from "@/lib/actions/admin";
+import { createEvent } from "@/lib/actions/admin";
 import { eventCategories } from "@/lib/content";
 import { fmtDate } from "@/lib/format";
 
@@ -40,17 +40,11 @@ export default async function AdminEvents({ searchParams }: { searchParams: Prom
         <p className="mt-3 text-xs text-muted">Events appear on the public Events page straight away.</p>
       </Card>
       {(data ?? []).map((e) => (
-        <Card key={e.id} className="flex items-start justify-between gap-3 p-5 text-sm">
-          <div>
-            <p className="text-base font-bold">{e.title}</p>
-            <p className="text-muted">{e.category} · {fmtDate(e.starts_on)} · {e.venue || "venue tbc"}</p>
-            <p className="mt-1 text-xs font-medium text-brand">{(regs ?? []).filter((r) => r.event_id === e.id).length} sign-ups</p>
-          </div>
-          <form action={deleteEvent}>
-            <input type="hidden" name="id" value={e.id} />
-            <button aria-label="Delete event" className="grid size-9 place-items-center rounded-full border border-line text-muted hover:text-red-600"><Trash2 className="size-4" /></button>
-          </form>
-        </Card>
+        <Link key={e.id} href={`/admin/events/${e.id}`} className="block rounded-3xl border border-line bg-surface p-5 text-sm shadow-card transition hover:-translate-y-0.5">
+          <p className="text-base font-bold">{e.title} {!e.published && <span className="ml-2 rounded-full bg-gold-soft px-2 py-0.5 text-xs font-medium text-gold">Hidden</span>}</p>
+          <p className="text-muted">{e.category} · {fmtDate(e.starts_on)} · {e.venue || "venue tbc"}</p>
+          <p className="mt-1 text-xs font-medium text-brand">{(regs ?? []).filter((r) => r.event_id === e.id).length} sign-ups · Open to edit and add photos and videos →</p>
+        </Link>
       ))}
       {!data?.length && <p className="text-sm text-muted">No events yet.</p>}
     </div>

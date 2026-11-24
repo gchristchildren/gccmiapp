@@ -44,6 +44,7 @@ export type GccEvent = {
   address: string;
   summary: string;
   registerUrl?: string;
+  mediaCount?: number;
 };
 
 export const coreValues = ["Excellence", "Integrity", "Social Responsibility", "Trustworthiness", "Commitment", "Passion"];

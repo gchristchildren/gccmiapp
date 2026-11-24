@@ -17,7 +17,7 @@ export function EventCard({ event, past = false, registered = false, compact = f
   return (
     <article className="flex flex-col rounded-3xl border border-line bg-surface p-5 shadow-card">
       <span className="w-fit rounded-full bg-brand-soft px-3 py-1 text-xs font-semibold text-brand">{event.category}</span>
-      <h3 className="mt-3 text-lg font-bold">{event.title}</h3>
+      <h3 className="mt-3 text-lg font-bold"><Link href={`/events/${event.slug}`} className="hover:text-brand">{event.title}</Link></h3>
       <p className="mt-1 text-sm text-muted">{event.summary}</p>
       <ul className="mt-4 space-y-1.5 text-sm">
         <li className="flex items-center gap-2"><CalendarDays className="size-4 text-brand" />{formatDate(event.date)}</li>
@@ -26,7 +26,9 @@ export function EventCard({ event, past = false, registered = false, compact = f
       </ul>
       <div className="mt-5 flex flex-wrap items-center gap-2 pt-1">
         {past ? (
-          <span className="text-xs text-muted">Photos, videos and testimonials coming soon.</span>
+          <Link href={`/events/${event.slug}`} className={`${btn} border border-line hover:bg-brand-soft`}>
+            {event.mediaCount ? "See photos & videos" : "View event"}
+          </Link>
         ) : (
           <>
             {compact ? (

@@ -116,12 +116,43 @@ export async function createEvent(f: FormData) {
   redirect("/admin/events");
 }
 
+export type EventState = { error?: string; saved?: boolean } | null;
+
+/** Edits an event. The address (slug) stays the same so existing links keep working. */
+export async function updateEvent(_prev: EventState, f: FormData): Promise<EventState> {
+  const { supabase } = await requireAdmin();
+  const register = text(f, "register_url");
+  if (!text(f, "title") || !text(f, "starts_on")) return { error: "Title and date are required." };
+  if (register && !/^https:\/\//.test(register)) return { error: "The registration link must start with https://" };
+  const { data, error } = await supabase.from("events").update({
+    title: text(f, "title"),
+    category: text(f, "category"),
+    starts_on: text(f, "starts_on"),
+    time_label: text(f, "time_label"),
+    venue: text(f, "venue"),
+    address: text(f, "address"),
+    summary: text(f, "summary"),
+    register_url: register || null,
+    published: f.get("published") === "on",
+  }).eq("id", text(f, "id")).select("id");
+  if (error) return { error: "Could not save the event (check the category)." };
+  if (!data?.length) return { error: NOT_DONE };
+  return { saved: true };
+}
+
 export async function deleteEvent(f: FormData) {
   const { supabase } = await requireAdmin();
-  await supabase.from("events").delete().eq("id", text(f, "id"));
+  const id = text(f, "id");
+  // Remember the event's uploaded files so they can be removed from storage along with it.
+  const { data: media } = await supabase.from("event_media").select("path, thumb_path").eq("event_id", id);
+  const { data, error } = await supabase.from("events").delete().eq("id", id).select("id");
+  if (error || !data?.length) fail("/admin/events", NOT_DONE);
+  const files = (media ?? []).flatMap((m) => [m.path, m.thumb_path]).filter((p): p is string => !!p);
+  if (files.length) await supabase.storage.from("event-media").remove(files);
   revalidatePath("/admin", "layout");
   revalidatePath("/events");
   revalidatePath("/");
+  redirect("/admin/events");
 }
 
 export async function createConsentForm(f: FormData) {
