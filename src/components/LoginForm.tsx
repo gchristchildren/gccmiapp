@@ -28,9 +28,11 @@ export function LoginForm() {
     const supabase = createClient();
 
     if (mode === "signin") {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) setMsg({ kind: "error", text: error.message });
       else {
+        // Note the sign-in for the admin analytics. Never blocks or breaks signing in.
+        await Promise.resolve(supabase.from("login_events").insert({ profile_id: data.user.id })).catch(() => {});
         // Hard navigation: the router may hold a prefetched signed-out redirect for `next`.
         window.location.assign(next);
         return;

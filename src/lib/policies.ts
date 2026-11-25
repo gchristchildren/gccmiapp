@@ -35,7 +35,7 @@ export const privacyNotice: Policy = {
           table: {
             head: ["Who", "What we collect", "Why", "Lawful basis"],
             rows: [
-              ["Parents/carers", "Name, email, phone, country, password (stored securely hashed)", "Create and run the portal account, send class links and reminders", "Contract / legitimate interests; consent for optional emails"],
+              ["Parents/carers", "Name, email, phone, country, whether you agreed to news emails, the dates and times you sign in to the portal, password (stored securely hashed)", "Create and run the portal account, send class links and reminders, understand how the portal is used and where our families are", "Contract / legitimate interests; consent for optional emails"],
               ["Children", "Name or nickname, age group, attendance, assignments, quiz scores, any medical, dietary or access needs you give us", "Run classes, track progress, keep children safe", "Parental consent / legitimate interests; explicit consent for any health information"],
               ["Adult learners (Masterclass)", "Name, email, payment details processed by our payment provider", "Provide the course", "Contract"],
               ["Donors", "Name, email, amount, Gift Aid declaration and home address (only if Gift Aid is claimed), payment reference", "Process and acknowledge gifts, claim Gift Aid, keep tax records", "Contract; legal obligation (tax records)"],
@@ -84,6 +84,7 @@ export const privacyNotice: Policy = {
               ["Volunteer records", "6 months after leaving, except vetting records"],
               ["Enquiries", "12 months"],
               ["Photos and video", "Until consent is withdrawn or 10 years, whichever is sooner"],
+              ["Portal sign-in records", "12 months"],
               ["Website logs", "90 days"],
             ],
           },

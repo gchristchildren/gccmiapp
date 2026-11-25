@@ -1,4 +1,4 @@
-import { Contact, FileUp, Mail, Trophy, Bell, BellRing, BookOpen, CalendarDays, FileText, GraduationCap, HandHeart, Newspaper, Heart, LayoutDashboard, ListChecks, UserRound, Users } from "lucide-react";
+import { BarChart3, Contact, FileUp, Mail, Trophy, Bell, BellRing, BookOpen, CalendarDays, FileText, GraduationCap, HandHeart, Newspaper, Heart, LayoutDashboard, ListChecks, UserRound, Users } from "lucide-react";
 import { AppShell } from "@/components/app/AppShell";
 import { requireAdmin } from "@/lib/auth";
 import { noIndex } from "@/lib/seo";
@@ -10,6 +10,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const items = [
     { href: "/admin", label: "Dashboard", icon: <LayoutDashboard />, exact: true },
     { href: "/admin/families", label: "Families", icon: <Users /> },
+    { href: "/admin/analytics", label: "Analytics", icon: <BarChart3 /> },
     { href: "/admin/parents", label: "Parents", icon: <Contact /> },
     { href: "/admin/sessions", label: "Bible Club sessions", icon: <BookOpen /> },
     { href: "/admin/events", label: "Events", icon: <CalendarDays /> },
