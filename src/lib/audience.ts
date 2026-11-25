@@ -54,6 +54,12 @@ export function parseAudience(params: Params): AudienceFilter {
   };
 }
 
+/** Reads a filter from a saved query string such as "country=Spain&age=Teens". */
+export function parseQuery(qs: string): AudienceFilter {
+  const u = new URLSearchParams(qs);
+  return parseAudience(Object.fromEntries([...new Set(u.keys())].map((k) => [k, u.getAll(k)])));
+}
+
 /** The same filter as URL parameters, for links and download buttons. */
 export function audienceQuery(f: AudienceFilter): string {
   const u = new URLSearchParams();

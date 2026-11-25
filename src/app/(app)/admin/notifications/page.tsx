@@ -1,4 +1,9 @@
+import { ActionButton } from "@/components/ActionButton";
+import { GroupNotifyForm, type GroupOption } from "@/components/GroupNotifyForm";
+import Link from "next/link";
 import { Card } from "@/components/ui";
+import { deleteAudience } from "@/lib/actions/audiences";
+import { applyAudience, loadParents, parseQuery } from "@/lib/audience";
 import { requireAdmin } from "@/lib/auth";
 import { sendManualNotification } from "@/lib/actions/admin";
 import { fmtDateTime } from "@/lib/format";
@@ -7,13 +12,23 @@ import { pushConfigured } from "@/lib/push";
 export const metadata = { title: "Notifications" };
 export const dynamic = "force-dynamic";
 
-export default async function AdminNotifications({ searchParams }: { searchParams: Promise<{ error?: string; sent?: string }> }) {
-  const { error, sent } = await searchParams;
+export default async function AdminNotifications({ searchParams }: { searchParams: Promise<{ error?: string; sent?: string; aud?: string }> }) {
+  const { error, sent, aud } = await searchParams;
   const { supabase } = await requireAdmin();
-  const [{ data: log }, { count }] = await Promise.all([
+  const [{ data: log }, { count }, { data: saved }, parents] = await Promise.all([
     supabase.from("notifications").select("*").order("created_at", { ascending: false }).limit(30),
     supabase.from("push_subscriptions").select("*", { count: "exact", head: true }),
+    supabase.from("saved_audiences").select("*").order("created_at", { ascending: false }),
+    loadParents(supabase),
   ]);
+  const size = (qs: string) => {
+    const rows = applyAudience(parents, parseQuery(qs));
+    return { parents: rows.length, reachable: rows.filter((r) => r.pushOn).length };
+  };
+  const options: GroupOption[] = [
+    ...(aud ? [{ value: `custom:${aud}`, label: "Your current selection from Parents", ...size(aud) }] : []),
+    ...(saved ?? []).map((a) => ({ value: `saved:${a.id}`, label: a.name, ...size(a.query) })),
+  ];
   const input = "mt-1 w-full rounded-2xl border border-line bg-bg px-4 py-3 text-sm";
 
   return (
@@ -39,6 +54,30 @@ export default async function AdminNotifications({ searchParams }: { searchParam
           <button className="rounded-full bg-brand px-6 py-3 text-sm font-semibold text-brand-fg hover:opacity-90">Send now</button>
         </form>
         <p className="mt-3 text-xs text-muted">Automatic reminders (&ldquo;Bible Club starts tomorrow&rdquo;, event reminders) run every morning.</p>
+      </Card>
+      <Card>
+        <h2 className="font-bold">Send to a chosen group</h2>
+        <p className="mt-1 text-sm text-muted">
+          Pick a group of parents you saved from the <Link href="/admin/parents" className="font-semibold text-brand hover:underline">Parents page</Link> (for example, everyone in Spain). Only parents who turned notifications on will receive it.
+        </p>
+        <div className="mt-4">
+          {options.length ? <GroupNotifyForm options={options} selected={aud ? `custom:${aud}` : undefined} /> : (
+            <p className="text-sm text-muted">No groups yet. Choose your filters on the Parents page, then press “Save this group”.</p>
+          )}
+        </div>
+        {!!saved?.length && (
+          <ul className="mt-5 divide-y divide-line border-t border-line text-sm">
+            {saved.map((a) => {
+              const n = size(a.query);
+              return (
+                <li key={a.id} className="flex flex-wrap items-center justify-between gap-2 py-2">
+                  <span><Link href={`/admin/parents?${a.query}`} className="font-semibold text-brand hover:underline">{a.name}</Link> <span className="text-muted">· {n.parents} parents, {n.reachable} with notifications on</span></span>
+                  <ActionButton action={deleteAudience} fields={{ id: a.id }} confirm={`Delete the group “${a.name}”?`} className="text-xs font-semibold text-red-600 hover:underline dark:text-red-400">Delete</ActionButton>
+                </li>
+              );
+            })}
+          </ul>
+        )}
       </Card>
       <Card className="p-0">
         <h2 className="p-5 pb-3 font-bold">Recent notifications</h2>

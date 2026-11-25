@@ -45,9 +45,15 @@ export async function subscriptionsFor(db: Db, audience: Audience) {
     ids = [...new Set((data ?? []).map((m) => m.profile_id))];
   }
   if (ids && !ids.length) return [];
-  const query = db.from("push_subscriptions").select("id, endpoint, p256dh, auth");
-  const { data } = await (ids ? query.in("profile_id", ids) : query);
-  return data ?? [];
+  const query = () => db.from("push_subscriptions").select("id, endpoint, p256dh, auth");
+  if (!ids) return (await query()).data ?? [];
+  // Long lists are fetched in chunks so the request address stays short enough.
+  const out: NonNullable<Awaited<ReturnType<ReturnType<typeof query>["in"]>>["data"]> = [];
+  for (let i = 0; i < ids.length; i += 100) {
+    const { data } = await query().in("profile_id", ids.slice(i, i + 100));
+    out.push(...(data ?? []));
+  }
+  return out;
 }
 
 /**

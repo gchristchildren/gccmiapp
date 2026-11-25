@@ -25,6 +25,10 @@ export type Database = {
         { id: string; admin_id: string | null; kind: "emails" | "full"; filter: Json; row_count: number; created_at: string },
         { id?: string; admin_id?: string | null; kind: "emails" | "full"; filter?: Json; row_count: number; created_at?: string }
       >;
+      saved_audiences: Table<
+        { id: string; name: string; query: string; created_by: string | null; created_at: string },
+        { id?: string; name: string; query?: string; created_by?: string | null; created_at?: string }
+      >;
       login_events: Table<
         { id: string; profile_id: string; created_at: string },
         { id?: string; profile_id: string; created_at?: string }

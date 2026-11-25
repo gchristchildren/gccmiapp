@@ -1,5 +1,6 @@
 import { Download } from "lucide-react";
 import Link from "next/link";
+import { SaveAudienceForm } from "@/components/SaveAudienceForm";
 import { Card } from "@/components/ui";
 import { applyAudience, audienceQuery, isFiltered, kidBands, loadParents, NO_COUNTRY, parseAudience } from "@/lib/audience";
 import { requireAdmin } from "@/lib/auth";
@@ -125,6 +126,16 @@ export default async function Parents({ searchParams }: { searchParams: Promise<
             <Download className="h-4 w-4" aria-hidden /> Download full list with children
           </a>
         </div>
+        {isFiltered(filter) && rows.length > 0 && (
+          <>
+            <SaveAudienceForm query={qs} />
+            <p className="mt-3 text-sm">
+              <Link href={`/admin/notifications?aud=${encodeURIComponent(qs)}`} className="font-semibold text-brand hover:underline">
+                Send a notification to these {rows.filter((r) => r.pushOn).length} parents with notifications on →
+              </Link>
+            </p>
+          </>
+        )}
         {sendingToNonConsenting && rows.length > 0 && (
           <p className="mt-3 rounded-2xl bg-amber-500/10 px-4 py-3 text-sm text-amber-700 dark:text-amber-300">
             Some of these parents have not agreed to news emails. Use these addresses only for things about their own children and classes. For newsletters or fundraising, set “Agreed to news emails” to Yes first. Every download is recorded.
