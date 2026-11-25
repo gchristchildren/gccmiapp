@@ -125,3 +125,44 @@ export async function loadParents(supabase: SupabaseClient<Database>): Promise<P
     children: byParent.get(p.id) ?? [],
   }));
 }
+
+// ---------------------------------------------------------------- rules on events and announcements
+/** Who an event or announcement is for. Empty lists mean "anyone". Matches the database function private.matches_audience. */
+export type AudienceRule = { countries: string[]; kids: string[]; ages: string[] };
+
+const strings = (v: unknown, allowed?: readonly string[]) =>
+  (Array.isArray(v) ? v : []).filter((x): x is string => typeof x === "string" && x.length > 0 && x.length <= 100 && (!allowed || allowed.includes(x))).slice(0, 300);
+
+/** Reads the rule from the form fields (rule_country, rule_kids, rule_age). Returns null when nothing is chosen (everyone). */
+export function ruleFromForm(f: FormData): AudienceRule | null {
+  const rule: AudienceRule = {
+    countries: strings(f.getAll("rule_country").map(String)),
+    kids: strings(f.getAll("rule_kids").map(String), kidBands),
+    ages: strings(f.getAll("rule_age").map(String), ageGroups),
+  };
+  return rule.countries.length || rule.kids.length || rule.ages.length ? rule : null;
+}
+
+/** Reads a rule stored in the database. */
+export function parseRule(json: unknown): AudienceRule | null {
+  if (!json || typeof json !== "object") return null;
+  const j = json as Record<string, unknown>;
+  const rule: AudienceRule = { countries: strings(j.countries), kids: strings(j.kids, kidBands), ages: strings(j.ages, ageGroups) };
+  return rule.countries.length || rule.kids.length || rule.ages.length ? rule : null;
+}
+
+export function ruleToFilter(rule: AudienceRule): AudienceFilter {
+  return { q: "", countries: rule.countries, kids: rule.kids, ages: rule.ages, masterclass: "any", push: "any", news: "any", from: "", to: "" };
+}
+
+const bandWords: Record<string, string> = { none: "no children", "1": "1 child", "2": "2 children", "3+": "3 or more children" };
+
+/** Plain-English summary, e.g. "Parents in Spain · with 2 children · with a child in Teens". */
+export function describeRule(rule: AudienceRule | null): string {
+  if (!rule) return "Everyone";
+  const parts: string[] = [];
+  if (rule.countries.length) parts.push(`in ${rule.countries.map((c) => (c === NO_COUNTRY ? "no country given" : c)).join(" or ")}`);
+  if (rule.kids.length) parts.push(`with ${rule.kids.map((k) => bandWords[k]).join(" or ")}`);
+  if (rule.ages.length) parts.push(`with a child in ${rule.ages.join(" or ")}`);
+  return `Parents ${parts.join(", ")}`;
+}

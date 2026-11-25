@@ -1,5 +1,5 @@
 // Countries for the parent sign-up form (ISO 3166 names). The two most common come first.
-export const countries: string[] = [
+const allCountries: string[] = [
  "United Kingdom",
  "Nigeria",
  "Afghanistan",
@@ -266,3 +266,6 @@ export const countries: string[] = [
  "Zimbabwe",
  "Zimbabwe"
 ];
+
+// Some names appear twice in the source list above; keep each country once, in order.
+export const countries: string[] = [...new Set(allCountries)];

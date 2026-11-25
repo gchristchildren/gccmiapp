@@ -5,9 +5,16 @@ import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
 import { volunteerSkills } from "@/lib/content";
 import { ageGroups, isHttpsUrl, refereeStatuses, ukLocalToIso } from "@/lib/format";
+import { applyAudience, loadParents, ruleFromForm, ruleToFilter, type AudienceRule } from "@/lib/audience";
 import { notify, type Audience } from "@/lib/push";
 
 const text = (f: FormData, k: string) => String(f.get(k) ?? "").trim();
+
+/** Push audience for something limited to a group of parents: only those matching, and only their devices. */
+async function ruleAudience(db: Parameters<typeof loadParents>[0], rule: AudienceRule): Promise<Audience> {
+  const rows = applyAudience(await loadParents(db), ruleToFilter(rule));
+  return { kind: "profiles", ids: rows.map((r) => r.id) };
+}
 const fail = (path: string, msg: string): never => redirect(`${path}?error=${encodeURIComponent(msg)}`);
 
 // Every action re-checks admin: the UI hiding a button is not a security boundary.
@@ -65,16 +72,18 @@ export async function createAnnouncement(f: FormData) {
   const audience = text(f, "audience");
   if (!text(f, "title") || !text(f, "body")) fail("/admin/announcements", "Title and message are required.");
   const aud = ["all", "bible_club", "academy", "masterclass"].includes(audience) ? audience : "all";
+  const rule = ruleFromForm(f);
   const { error } = await supabase.from("announcements").insert({
     title: text(f, "title"),
     body: text(f, "body"),
     audience: aud,
+    audience_rule: rule,
     created_by: user.id,
   });
   if (error) fail("/admin/announcements", "Could not post the announcement.");
   if (f.get("send_push") === "on") {
     // Academy has no enrolment data yet, so it goes to everyone who has reminders on.
-    const target: Audience = aud === "bible_club" ? { kind: "bible_club" } : aud === "masterclass" ? { kind: "masterclass" } : { kind: "all" };
+    const target: Audience = rule ? await ruleAudience(supabase, rule) : aud === "bible_club" ? { kind: "bible_club" } : aud === "masterclass" ? { kind: "masterclass" } : { kind: "all" };
     await notify(supabase, target, { kind: "announcement", title: text(f, "title"), body: text(f, "body").slice(0, 140), url: "/portal/announcements" }, user.id);
   }
   revalidatePath("/admin", "layout");
@@ -95,6 +104,7 @@ export async function createEvent(f: FormData) {
   const { supabase, user } = await requireAdmin();
   const title = text(f, "title");
   if (!title || !text(f, "starts_on")) fail("/admin/events", "Title and date are required.");
+  const rule = ruleFromForm(f);
   const { error } = await supabase.from("events").insert({
     slug: `${slugify(title)}-${text(f, "starts_on")}`,
     title,
@@ -105,10 +115,11 @@ export async function createEvent(f: FormData) {
     address: text(f, "address"),
     summary: text(f, "summary"),
     register_url: text(f, "register_url") || null,
+    audience_rule: rule,
   });
   if (error) fail("/admin/events", "Could not save the event (check the category and that it isn't a duplicate).");
   if (f.get("send_push") === "on") {
-    await notify(supabase, { kind: "all" }, { kind: "event", title: "New event added", body: title, url: "/events" }, user.id);
+    await notify(supabase, rule ? await ruleAudience(supabase, rule) : { kind: "all" }, { kind: "event", title: "New event added", body: title, url: rule ? "/portal/events" : "/events" }, user.id);
   }
   revalidatePath("/admin", "layout");
   revalidatePath("/events");
@@ -133,10 +144,14 @@ export async function updateEvent(_prev: EventState, f: FormData): Promise<Event
     address: text(f, "address"),
     summary: text(f, "summary"),
     register_url: register || null,
+    audience_rule: ruleFromForm(f),
     published: f.get("published") === "on",
   }).eq("id", text(f, "id")).select("id");
   if (error) return { error: "Could not save the event (check the category)." };
   if (!data?.length) return { error: NOT_DONE };
+  // Changing who an event is for changes what the public pages may show.
+  revalidatePath("/events", "layout");
+  revalidatePath("/");
   return { saved: true };
 }
 

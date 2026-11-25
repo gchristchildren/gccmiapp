@@ -2,12 +2,14 @@
 
 import { useActionState, useEffect } from "react";
 import { updateEvent, type EventState } from "@/lib/actions/admin";
+import { AudienceFields } from "@/components/AudienceFields";
+import type { AudienceRule } from "@/lib/audience";
 import { eventCategories } from "@/lib/content";
 
 type Event = { id: string; title: string; category: string; starts_on: string; time_label: string; venue: string; address: string; summary: string; register_url: string | null; published: boolean };
 
 /** Edit form for one event. Errors show here; a successful save reloads the page with a confirmation. */
-export function EventEditForm({ event }: { event: Event }) {
+export function EventEditForm({ event, rule }: { event: Event; rule: AudienceRule | null }) {
   const [state, action, pending] = useActionState<EventState, FormData>(updateEvent, null);
   useEffect(() => {
     if (state?.saved) window.location.assign(`/admin/events/${event.id}?updated=1`);
@@ -26,7 +28,8 @@ export function EventEditForm({ event }: { event: Event }) {
       <label className="text-sm font-medium sm:col-span-2">Address (used for the map link)<input name="address" defaultValue={event.address} className={input} /></label>
       <label className="text-sm font-medium sm:col-span-2">Summary<textarea name="summary" rows={3} defaultValue={event.summary} className={input} /></label>
       <label className="text-sm font-medium sm:col-span-2">Registration link (optional, https://)<input name="register_url" type="url" defaultValue={event.register_url ?? ""} className={input} /></label>
-      <label className="flex items-center gap-3 text-sm sm:col-span-2"><input type="checkbox" name="published" defaultChecked={event.published} className="size-4 accent-[var(--brand)]" /> Visible on the Events page</label>
+      <AudienceFields rule={rule} />
+      <label className="flex items-center gap-3 text-sm sm:col-span-2"><input type="checkbox" name="published" defaultChecked={event.published} className="size-4 accent-[var(--brand)]" /> Visible to its audience (the public Events page, or the parent portal if you chose a group)</label>
       {state?.error && <p role="alert" className="rounded-2xl bg-red-500/10 px-4 py-3 text-sm text-red-600 dark:text-red-400 sm:col-span-2">{state.error}</p>}
       <button disabled={pending} className="rounded-full bg-brand px-6 py-3 text-sm font-semibold text-brand-fg hover:opacity-90 disabled:opacity-50 sm:w-fit">{pending ? "Saving…" : "Save changes"}</button>
     </form>

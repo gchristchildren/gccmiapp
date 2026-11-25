@@ -1,4 +1,4 @@
-import { Bell, CalendarDays, FileText, GraduationCap, HandHeart, Home, Settings2, Users } from "lucide-react";
+import { Ticket, Bell, CalendarDays, FileText, GraduationCap, HandHeart, Home, Settings2, Users } from "lucide-react";
 import { AppShell } from "@/components/app/AppShell";
 import { requireUser } from "@/lib/auth";
 import { noIndex } from "@/lib/seo";
@@ -11,6 +11,7 @@ export default async function PortalLayout({ children }: { children: React.React
     { href: "/portal", label: "Home", icon: <Home />, exact: true },
     { href: "/portal/children", label: "My children", icon: <Users /> },
     { href: "/portal/schedule", label: "Schedule & lessons", icon: <CalendarDays /> },
+    { href: "/portal/events", label: "Events for you", icon: <Ticket /> },
     { href: "/portal/announcements", label: "Announcements", icon: <Bell /> },
     { href: "/portal/forms", label: "Consent forms", icon: <FileText /> },
     { href: "/portal/masterclass", label: "Masterclass", icon: <GraduationCap /> },

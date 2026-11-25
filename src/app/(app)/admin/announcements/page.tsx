@@ -1,5 +1,7 @@
 import { Trash2 } from "lucide-react";
+import { AudienceFields } from "@/components/AudienceFields";
 import { Card } from "@/components/ui";
+import { describeRule, parseRule } from "@/lib/audience";
 import { requireAdmin } from "@/lib/auth";
 import { createAnnouncement, deleteAnnouncement } from "@/lib/actions/admin";
 import { fmtDate } from "@/lib/format";
@@ -30,6 +32,7 @@ export default async function AdminAnnouncements({ searchParams }: { searchParam
               <option value="masterclass">Masterclass</option>
             </select>
           </label>
+          <AudienceFields />
           <label className="flex items-center gap-3 text-sm"><input type="checkbox" name="send_push" defaultChecked className="size-4 accent-[var(--brand)]" /> Also send as a push notification</label>
           <button className="rounded-full bg-brand px-6 py-3 text-sm font-semibold text-brand-fg hover:opacity-90">Post</button>
         </form>
@@ -39,7 +42,7 @@ export default async function AdminAnnouncements({ searchParams }: { searchParam
         <Card key={n.id} className="flex items-start justify-between gap-3 p-5 text-sm">
           <div>
             <p className="text-base font-bold">{n.title}</p>
-            <p className="text-xs text-muted">{fmtDate(n.created_at)} · {n.audience}</p>
+            <p className="text-xs text-muted">{fmtDate(n.created_at)} · {parseRule(n.audience_rule) ? describeRule(parseRule(n.audience_rule)) : n.audience}</p>
             <p className="mt-2 whitespace-pre-line">{n.body}</p>
           </div>
           <form action={deleteAnnouncement}>

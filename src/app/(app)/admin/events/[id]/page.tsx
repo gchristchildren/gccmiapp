@@ -6,6 +6,7 @@ import { ConfirmButton } from "@/components/ConfirmButton";
 import { Card } from "@/components/ui";
 import { requireAdmin } from "@/lib/auth";
 import { deleteEvent } from "@/lib/actions/admin";
+import { describeRule, parseRule } from "@/lib/audience";
 
 export const metadata = { title: "Edit event" };
 export const dynamic = "force-dynamic";
@@ -19,6 +20,7 @@ export default async function EditEvent({ params, searchParams }: { params: Prom
     supabase.from("event_media").select("id, kind, path, thumb_path, embed_url, caption").eq("event_id", id).order("created_at"),
   ]);
   if (!event) notFound();
+  const rule = parseRule(event.audience_rule);
 
   return (
     <div className="mx-auto max-w-4xl space-y-6">
@@ -26,13 +28,13 @@ export default async function EditEvent({ params, searchParams }: { params: Prom
         <Link href="/admin/events" className="text-sm font-medium text-brand">← All events</Link>
         <h1 className="mt-1 text-2xl font-bold">{event.title}</h1>
         <p className="text-sm text-muted">
-          <Link href={`/events/${event.slug}`} className="font-medium text-brand" target="_blank">View on the website</Link>
+          {rule ? `Portal only. For: ${describeRule(rule)}.` : <Link href={`/events/${event.slug}`} className="font-medium text-brand" target="_blank">View on the website</Link>}
         </p>
       </div>
       {updated && <p role="status" className="rounded-2xl bg-brand-soft px-4 py-3 text-sm text-brand">Event updated.</p>}
       <Card>
         <h2 className="mb-4 font-bold">Event details</h2>
-        <EventEditForm event={event} />
+        <EventEditForm event={event} rule={rule} />
         <form action={deleteEvent} className="mt-6 border-t border-line pt-4">
           <input type="hidden" name="id" value={event.id} />
           <ConfirmButton message={`Delete "${event.title}", its sign-ups and all its photos and videos? This cannot be undone.`} className="rounded-full border border-red-500/40 px-5 py-2.5 text-sm font-semibold text-red-600 hover:bg-red-500/10 dark:text-red-400">

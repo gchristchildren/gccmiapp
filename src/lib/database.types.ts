@@ -105,6 +105,7 @@ export type Database = {
           title: string;
           body: string;
           audience: string;
+          audience_rule: Json | null;
           published: boolean;
           created_by: string | null;
           created_at: string;
@@ -114,6 +115,7 @@ export type Database = {
           title: string;
           body: string;
           audience?: string;
+          audience_rule?: Json | null;
           published?: boolean;
           created_by?: string | null;
           created_at?: string;
@@ -153,6 +155,7 @@ export type Database = {
           address: string;
           summary: string;
           register_url: string | null;
+          audience_rule: Json | null;
           published: boolean;
           created_at: string;
         },
@@ -167,6 +170,7 @@ export type Database = {
           address?: string;
           summary?: string;
           register_url?: string | null;
+          audience_rule?: Json | null;
           published?: boolean;
           created_at?: string;
         }
