@@ -18,8 +18,12 @@ export type Database = {
   public: {
     Tables: {
       profiles: Table<
-        { id: string; full_name: string; phone: string | null; country: string | null; email: string | null; role: AppRole; skills: string[]; created_at: string },
-        { id: string; full_name?: string; phone?: string | null; country?: string | null; email?: string | null; role?: AppRole; skills?: string[]; created_at?: string }
+        { id: string; full_name: string; phone: string | null; country: string | null; email: string | null; role: AppRole; skills: string[]; email_updates: boolean; created_at: string },
+        { id: string; full_name?: string; phone?: string | null; country?: string | null; email?: string | null; role?: AppRole; skills?: string[]; email_updates?: boolean; created_at?: string }
+      >;
+      export_log: Table<
+        { id: string; admin_id: string | null; kind: "emails" | "full"; filter: Json; row_count: number; created_at: string },
+        { id?: string; admin_id?: string | null; kind: "emails" | "full"; filter?: Json; row_count: number; created_at?: string }
       >;
       children: Table<
         {
@@ -386,7 +390,10 @@ export type Database = {
       >;
     };
     Views: { [_ in never]: never };
-    Functions: { admin_delete_family: { Args: { target: string }; Returns: undefined } };
+    Functions: {
+      admin_delete_family: { Args: { target: string }; Returns: undefined };
+      admin_parent_stats: { Args: Record<string, never>; Returns: { profile_id: string; last_sign_in_at: string | null; push_on: boolean }[] };
+    };
     Enums: { app_role: AppRole };
     CompositeTypes: { [_ in never]: never };
   };

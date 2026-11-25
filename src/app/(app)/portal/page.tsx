@@ -1,6 +1,7 @@
 import { BookOpen, FileWarning, Plus } from "lucide-react";
 import Link from "next/link";
 import { JoinZoom } from "@/components/JoinZoom";
+import { EmailPrefs } from "@/components/EmailPrefs";
 import { PushToggle } from "@/components/PushToggle";
 import { Card } from "@/components/ui";
 import { countries } from "@/lib/countries";
@@ -75,6 +76,7 @@ export default async function PortalHome() {
       )}
 
       <Card><PushToggle publicKey={process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? null} /></Card>
+      <Card><EmailPrefs userId={user.id} initial={profile.email_updates} /></Card>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
